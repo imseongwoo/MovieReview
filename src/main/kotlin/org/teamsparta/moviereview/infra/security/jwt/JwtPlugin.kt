@@ -17,15 +17,15 @@ class JwtPlugin(
     @Value("\${auth.jwt.secret}") private val secret: String,
     @Value("\${auth.jwt.accessTokenExpirationHour}") private val accessTokenExpirationHour: Long,
 ) {
-    fun validateToken(token : String) : Result<Jws<Claims>>{
+    fun validateToken(token: String): Result<Jws<Claims>> {
         return kotlin.runCatching {
             val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
         }
     }
 
-    fun generateAccessToken(subject: String, userName: String, role: String) : String{
-        return generateToken(subject,userName, role, Duration.ofHours(accessTokenExpirationHour))
+    fun generateAccessToken(subject: String, email: String, role: String): String {
+        return generateToken(subject, email, role, Duration.ofHours(accessTokenExpirationHour))
     }
 
     private fun generateToken(subject: String, email: String, role: String, expirationPeriod: Duration?): String {
