@@ -1,5 +1,6 @@
 package org.teamsparta.moviereview.domain.users.controller.v1
 
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -47,5 +48,13 @@ class UsersController(
         return ResponseEntity
             .status(HttpStatus.OK)
             .body(userService.updateProfile(profile, principal.id))
+    }
+
+    @PostMapping("/logout")
+    fun logout(request: HttpServletRequest): ResponseEntity<Unit> {
+        val token = request.getAttribute("accessToken") as String?
+        return ResponseEntity
+            .status(HttpStatus.OK)
+            .body(userService.signOut(token!!))
     }
 }

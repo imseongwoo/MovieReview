@@ -10,4 +10,5 @@ interface UserService {
     fun signUp(request: SignUpRequest): UserDto
     fun signIn(loginRequest: LoginRequest): LoginResponse
     fun updateProfile(profile: UserUpdateProfileDto, userId: Long): UserDto
+    fun signOut(token: String)
 }
