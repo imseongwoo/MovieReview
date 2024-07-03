@@ -5,6 +5,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.24"
     kotlin("plugin.noarg") version "1.9.24"
     kotlin("plugin.allopen") version "1.9.24"
+    kotlin("kapt") version "1.9.24"
 }
 
 group = "org.teamsparta"
@@ -26,6 +27,8 @@ noArg {
     annotation("jakarta.persistence.MappedSuperclass")
     annotation("jakarta.persistence.Embeddable")
 }
+
+val queryDslVersion = "5.0.0"
 
 
 configurations {
@@ -52,6 +55,8 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-s3:1.12.741")
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
     implementation ("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
+    kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
 
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
