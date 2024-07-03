@@ -6,12 +6,14 @@ import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.web.AuthenticationEntryPoint
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 class SecurityConfig(
+    private val authenticationEntrypoint: AuthenticationEntryPoint
 ) {
 
     @Bean
@@ -27,6 +29,9 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
                     .anyRequest().authenticated()
+            }
+            .exceptionHandling {
+                it.authenticationEntryPoint(authenticationEntrypoint)
             }
             .build()
     }
