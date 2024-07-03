@@ -4,15 +4,20 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.teamsparta.moviereview.domain.common.InvalidCredentialException
+import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
+import org.teamsparta.moviereview.domain.users.dto.LoginRequest
+import org.teamsparta.moviereview.domain.users.dto.LoginResponse
 import org.teamsparta.moviereview.domain.users.dto.SignUpRequest
 import org.teamsparta.moviereview.domain.users.dto.UserDto
 import org.teamsparta.moviereview.domain.users.model.Users
 import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
+import org.teamsparta.moviereview.infra.security.jwt.JwtPlugin
 
 @Service
 class UserServiceImpl(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val jwtPlugin: JwtPlugin
 ) : UserService {
 
     @Transactional
@@ -31,5 +36,20 @@ class UserServiceImpl(
             )
         )
         return UserDto.fromEntity(user)
+    }
+
+    override fun signIn(loginRequest: LoginRequest): LoginResponse {
+        val user = userRepository.findByEmail(loginRequest.email) ?: throw ModelNotFoundException("Users", null)
+
+        if (user.email != loginRequest.email || !passwordEncoder.matches(loginRequest.password, user.password)) {
+            throw InvalidCredentialException()
+        }
+        return LoginResponse.fromEntity(
+            jwtPlugin.generateAccessToken(
+                subject = user.id.toString(),
+                email = user.email,
+                role = user.role.toString()
+            )
+        )
     }
 }
