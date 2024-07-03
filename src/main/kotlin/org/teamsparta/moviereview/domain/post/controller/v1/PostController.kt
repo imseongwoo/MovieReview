@@ -24,8 +24,8 @@ class PostController(
 ) {
 
     @GetMapping
-    fun getPostList(): ResponseEntity<List<PostResponse>> {
-        return ResponseEntity.ok(postService.getPostList())
+    fun getPostList(@RequestParam category: String?): ResponseEntity<List<PostResponse>> {
+        return ResponseEntity.ok(postService.getPostList(category))
     }
 
     @GetMapping("{postId}")
@@ -54,11 +54,9 @@ class PostController(
 
     @GetMapping("/search")
     fun searchPost(
-        @RequestParam title: String?,
-        @RequestParam nickname: String?,
-        @RequestParam content: String?,
+        @RequestParam keyword: String,
         ) : ResponseEntity<List<PostResponse>> {
-        return ResponseEntity.ok(postService.searchPost(title, nickname, content))
+        return ResponseEntity.ok(postService.searchPost(keyword))
     }
 
     @PostMapping("/{postId}/thumbs-up")

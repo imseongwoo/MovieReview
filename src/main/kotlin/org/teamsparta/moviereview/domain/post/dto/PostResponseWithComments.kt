@@ -3,7 +3,7 @@ package org.teamsparta.moviereview.domain.post.dto
 import org.teamsparta.moviereview.domain.post.model.Post
 import java.time.LocalDateTime
 
-data class PostResponse(
+data class PostResponseWithComments(
     val id: Long,
     val title: String,
     val nickname: String,
@@ -11,10 +11,13 @@ data class PostResponse(
     val category: String,
     val thumbUpCount: Long,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
+    // val commentList: List<CommentResponse>
 ) {
     companion object {
-        fun from(post: Post): PostResponse {
+        fun from(post: Post,
+            // commentList: List<CommentResponse>
+        ): PostResponse {
             return PostResponse(
                 id = post.id!!,
                 title = post.title,
@@ -23,7 +26,8 @@ data class PostResponse(
                 category = post.category.name,
                 thumbUpCount = 0,
                 createdAt = post.createdAt,
-                updatedAt = post.updatedAt
+                updatedAt = post.updatedAt,
+                // commentList = commentList
             )
         }
     }
