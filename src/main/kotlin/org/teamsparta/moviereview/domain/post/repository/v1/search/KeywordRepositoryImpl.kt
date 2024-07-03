@@ -9,11 +9,11 @@ class KeywordRepositoryImpl : CustomKeywordRepository, QueryDslSupport() {
         val keyword = QKeyword.keyword
 
         return queryFactory
-            .select(keyword.keyword)
+            .select(keyword.searchWord)
             .from(keyword)
             .where(keyword.createdAt.between(from, to))
-            .groupBy(keyword.keyword)
-            .orderBy(keyword.keyword.count().desc())
+            .groupBy(keyword.searchWord)
+            .orderBy(keyword.searchWord.count().desc())
             .limit(10)
             .fetch()
     }

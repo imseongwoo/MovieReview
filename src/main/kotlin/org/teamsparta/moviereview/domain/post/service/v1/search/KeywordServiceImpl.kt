@@ -10,9 +10,9 @@ import java.time.LocalDateTime
 class KeywordServiceImpl(private val keywordRepository: KeywordRepository): KeywordService {
 
     @Transactional
-    override fun saveKeyword(keyword: String) {
-        val searchWord = Keyword.of(keyword)
-        keywordRepository.save(searchWord)
+    override fun saveKeyword(searchWord: String) {
+        val searchKeyword = Keyword.of(searchWord)
+        keywordRepository.save(searchKeyword)
     }
 
     override fun getHotKeywordsLastHour(): List<String> {
