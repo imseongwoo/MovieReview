@@ -17,4 +17,12 @@ class KeywordRepositoryImpl : CustomKeywordRepository, QueryDslSupport() {
             .limit(10)
             .fetch()
     }
+
+    override fun deleteKeywords(expiryDate: LocalDateTime) {
+        val keyword = QKeyword.keyword
+
+        queryFactory.delete(keyword)
+            .where(keyword.createdAt.before(expiryDate))
+            .execute()
+    }
 }
