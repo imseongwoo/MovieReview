@@ -10,12 +10,15 @@ import org.teamsparta.moviereview.domain.post.dto.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
 import org.teamsparta.moviereview.domain.post.model.Category
 import org.teamsparta.moviereview.domain.post.model.Post
+import org.teamsparta.moviereview.domain.post.model.thumbsup.ThumbsUp
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
+import org.teamsparta.moviereview.domain.post.repository.v1.thumbsup.ThumbsUpRepository
 import org.teamsparta.moviereview.domain.users.model.Users
 
 @Service
 class PostServiceImpl(
-    private val postRepository: PostRepository
+    private val postRepository: PostRepository,
+    private val thumbsUpRepository: ThumbsUpRepository
 ): PostService {
     override fun getPostList(category: String?): List<PostResponse> {
         // 페이지네이션 적용 예정
@@ -33,10 +36,10 @@ class PostServiceImpl(
 
     override fun createPost(request: CreatePostRequest): PostResponse {
         // 로그인한 유저인지 확인, 나중에 수정
-        val user = Users()
+        val user = Users(email = "12345@gmail.com", password = "1234", nickname = "nickname")
 
         return postRepository.save(Post.of(request.title, request.content, request.category, user))
-            .let {PostResponse.from(it) }
+            .let { PostResponse.from(it) }
     }
 
     @Transactional
@@ -66,21 +69,27 @@ class PostServiceImpl(
     }
 
     override fun thumbsUpPost(postId: Long) {
-        // 로그인된 유저인지 확인
+        // 유저 로그인 확인, 나중에 수정
+        val user = Users(email = "12345@gmail.com", password = "1234", nickname = "nickname")
 
-        // 좋아요 누른적 있는지 확인
+        if(thumbsUpRepository.existsByPostIdAndUserId(postId, user.id!!))
+            throw IllegalArgumentException("You've already given a thumbs up to this post")
 
-        // 좋아요 테이블에 저장
-        TODO("Not yet implemented")
+        val post = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
+
+        thumbsUpRepository.save(ThumbsUp(post,user))
     }
 
     override fun cancelThumbsUpPost(postId: Long) {
-        // 로그인된 유저인지 확인
+        // 유저 로그인 확인, 나중에 수정
+        val user = Users(email = "12345@gmail.com", password = "1234", nickname = "nickname")
 
-        // 좋아요 누른적 있는지 확인
+        if(!postRepository.existsById(postId)) throw ModelNotFoundException("Post", postId)
 
-        // 좋아요 테이블에서 삭제
-        TODO("Not yet implemented")
+        val thumbsUp = thumbsUpRepository.findByPostIdAndUserId(postId, user.id!!)
+            ?: throw IllegalArgumentException("You've not given a thumbs up to this post, so it can't be canceled")
+
+        thumbsUpRepository.delete(thumbsUp)
     }
 
     override fun reportPost(postId: Long, request: ReportPostRequest) {
