@@ -1,7 +1,7 @@
 package org.teamsparta.moviereview.domain.post.service.v1.search
 
-import org.teamsparta.moviereview.domain.post.dto.PostResponse
-
 interface KeywordService {
-    fun saveKeyword(keyword: String)
+    fun saveKeyword(searchWord: String)
+    fun getHotKeywordsLastHour(): List<String>
+    fun getHotKeywordsLastDay(): List<String>
 }
