@@ -24,7 +24,7 @@ class PostController(
 ) {
 
     @GetMapping
-    fun getPostList(@RequestParam category: String): ResponseEntity<List<PostResponse>> {
+    fun getPostList(@RequestParam category: String?): ResponseEntity<List<PostResponse>> {
         return ResponseEntity.ok(postService.getPostList(category))
     }
 

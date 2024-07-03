@@ -17,9 +17,11 @@ import org.teamsparta.moviereview.domain.users.model.Users
 class PostServiceImpl(
     private val postRepository: PostRepository
 ): PostService {
-    override fun getPostList(category: String): List<PostResponse> {
+    override fun getPostList(category: String?): List<PostResponse> {
         // 페이지네이션 적용 예정
-        return postRepository.findAllByCategoryOrderByCreatedAtDesc(Category.fromString(category))
+        return if (category == null) postRepository.findAllByOrderByCreatedAtDesc()
+            .map { PostResponse.from(it) }
+            else postRepository.findAllByCategoryOrderByCreatedAtDesc(Category.fromString(category))
             .map { PostResponse.from(it) }
     }
 

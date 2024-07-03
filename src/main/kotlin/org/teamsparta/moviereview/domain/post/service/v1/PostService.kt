@@ -6,7 +6,7 @@ import org.teamsparta.moviereview.domain.post.dto.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
 
 interface PostService {
-    fun getPostList(category: String): List<PostResponse>
+    fun getPostList(category: String?): List<PostResponse>
     fun getPostById(postId: Long): PostResponse
     fun createPost(request: CreatePostRequest): PostResponse
     fun updatePost(postId: Long, request: UpdatePostRequest): PostResponse
