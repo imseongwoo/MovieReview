@@ -15,11 +15,13 @@ class Keyword(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    fun of(keyword: String): Keyword {
-        val timestamp = LocalDateTime.now()
-        return Keyword(
-            keyword = keyword,
-            createdAt = timestamp
-        )
+    companion object {
+        fun of(keyword: String): Keyword {
+            val timestamp = LocalDateTime.now()
+            return Keyword(
+                keyword = keyword,
+                createdAt = timestamp
+            )
+        }
     }
 }
