@@ -19,7 +19,7 @@ class Keyword(
         fun of(keyword: String): Keyword {
             val timestamp = LocalDateTime.now()
             return Keyword(
-                keyword = keyword,
+                keyword.replace(" ", ""),
                 createdAt = timestamp
             )
         }
