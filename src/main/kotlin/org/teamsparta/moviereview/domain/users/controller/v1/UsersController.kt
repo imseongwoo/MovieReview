@@ -15,6 +15,7 @@ import org.teamsparta.moviereview.domain.users.dto.SignUpRequest
 import org.teamsparta.moviereview.domain.users.dto.UserDto
 import org.teamsparta.moviereview.domain.users.dto.UserUpdateProfileDto
 import org.teamsparta.moviereview.domain.users.service.v1.UserService
+import org.teamsparta.moviereview.infra.security.UserPrincipal
 
 @RequestMapping("/api/v1/users")
 @RestController
@@ -41,7 +42,7 @@ class UsersController(
     @PatchMapping("/profile")
     fun updateProfile(
         @AuthenticationPrincipal principal: UserPrincipal,
-        @@RequestBody profile: UserUpdateProfileDto
+        @RequestBody profile: UserUpdateProfileDto
     ): ResponseEntity<UserDto> {
         return ResponseEntity
             .status(HttpStatus.OK)
