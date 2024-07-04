@@ -2,6 +2,7 @@ package org.teamsparta.moviereview.domain.post.controller.v1
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -16,6 +17,7 @@ import org.teamsparta.moviereview.domain.post.dto.PostResponse
 import org.teamsparta.moviereview.domain.post.dto.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
 import org.teamsparta.moviereview.domain.post.service.v1.PostService
+import org.teamsparta.moviereview.infra.security.UserPrincipal
 
 @RequestMapping("/api/v1/posts")
 @RestController
@@ -34,21 +36,28 @@ class PostController(
     }
 
     @PostMapping
-    fun createCourse(@RequestBody request: CreatePostRequest): ResponseEntity<PostResponse> {
-        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(request))
+    fun createCourse(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @RequestBody request: CreatePostRequest
+    ): ResponseEntity<PostResponse> {
+        return ResponseEntity.status(HttpStatus.CREATED).body(postService.createPost(principal, request))
     }
 
     @PutMapping("/{postId}")
-    fun updatePost(@PathVariable postId: Long, @RequestBody request: UpdatePostRequest
+    fun updatePost(
+        @AuthenticationPrincipal principal: UserPrincipal,
+        @PathVariable postId: Long,
+        @RequestBody request: UpdatePostRequest
     ): ResponseEntity<PostResponse> {
-        return ResponseEntity.ok(postService.updatePost(postId, request))
+        return ResponseEntity.ok(postService.updatePost(principal, postId, request))
     }
 
     @DeleteMapping("/{postId}")
     fun deletePost(
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable postId: Long
     ): ResponseEntity<Unit> {
-        postService.deletePost(postId)
+        postService.deletePost(principal, postId)
         return ResponseEntity.noContent().build()
     }
 
@@ -61,17 +70,19 @@ class PostController(
 
     @PostMapping("/{postId}/thumbs-up")
     fun thumbsUpPost(
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable postId: Long
     ): ResponseEntity<Unit> {
-        postService.thumbsUpPost(postId)
+        postService.thumbsUpPost(principal, postId)
         return ResponseEntity.ok().build()
     }
 
     @DeleteMapping("/{postId}/thumbs-up")
     fun cancelThumbsUpPost(
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable postId: Long
     ): ResponseEntity<Unit> {
-        postService.cancelThumbsUpPost(postId)
+        postService.cancelThumbsUpPost(principal, postId)
         return ResponseEntity.ok().build()
     }
 
