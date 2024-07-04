@@ -33,8 +33,6 @@ class PostServiceImpl(
     private val reportRepository: ReportRepository
 ): PostService {
     override fun getPostList(pageable: Pageable, category: String?): Page<PostResponse> {
-        // 좋아요 눌렀는지 여부(?)
-
         val (totalCount, post, thumbsUpCount) = postRepository.findAllByPageableAndCategory(pageable, category)
 
         val postResponseList = post.zip(thumbsUpCount) { a, b -> PostResponse.from(a,b) }
@@ -44,7 +42,6 @@ class PostServiceImpl(
 
     @Transactional(readOnly = true)
     override fun getPostById(postId: Long): PostResponseWithComments {
-        // 좋아요 눌렀는지 여부(?)
         val post = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
 
         val commentList = commentRepository.findAllByPostId(postId)
@@ -70,11 +67,16 @@ class PostServiceImpl(
 
     @Transactional
     override fun deletePost(principal: UserPrincipal, postId: Long) {
-        // 포스트를 소프트 딜리트 할 때, 댓글과 좋아요는 어떻게 처리할 것인가?
+
         postRepository.findByIdOrNull(postId)
             ?. also { checkPermission(it, principal) }
             ?. apply { this.softDelete() }
             ?: throw ModelNotFoundException("Post", postId)
+
+        commentRepository.findAllByPostId(postId)
+            .map { it.softDelete() }
+
+        thumbsUpRepository.deleteAllByPostId(postId)
     }
 
     override fun searchPost(keyword: String): List<PostResponse> {
