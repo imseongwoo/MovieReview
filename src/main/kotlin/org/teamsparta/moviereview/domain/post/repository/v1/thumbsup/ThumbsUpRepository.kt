@@ -8,4 +8,5 @@ import org.teamsparta.moviereview.domain.post.model.thumbsup.ThumbsUp
 interface ThumbsUpRepository: JpaRepository<ThumbsUp, Long> {
     fun existsByPostIdAndUserId(postId: Long, userId: Long): Boolean
     fun findByPostIdAndUserId(postId: Long, userId: Long) : ThumbsUp?
+    fun countByPostId(postId: Long): Long
 }
