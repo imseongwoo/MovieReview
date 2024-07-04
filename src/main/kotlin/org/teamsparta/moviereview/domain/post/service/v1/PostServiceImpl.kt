@@ -1,7 +1,6 @@
 package org.teamsparta.moviereview.domain.post.service.v1
 
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -10,10 +9,7 @@ import org.teamsparta.moviereview.domain.comment.dto.CommentResponse
 import org.teamsparta.moviereview.domain.comment.repository.v1.CommentRepository
 import org.teamsparta.moviereview.domain.common.exception.AccessDeniedException
 import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
-import org.teamsparta.moviereview.domain.post.dto.CreatePostRequest
-import org.teamsparta.moviereview.domain.post.dto.PostResponse
-import org.teamsparta.moviereview.domain.post.dto.PostResponseWithComments
-import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
+import org.teamsparta.moviereview.domain.post.dto.*
 import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.model.Post
 import org.teamsparta.moviereview.domain.post.model.report.Report
@@ -33,11 +29,7 @@ class PostServiceImpl(
     private val reportRepository: ReportRepository
 ): PostService {
     override fun getPostList(pageable: Pageable, category: String?): Page<PostResponse> {
-        val (totalCount, post, thumbsUpCount) = postRepository.findAllByPageableAndCategory(pageable, category)
-
-        val postResponseList = post.zip(thumbsUpCount) { a, b -> PostResponse.from(a,b) }
-
-        return PageImpl(postResponseList, pageable, totalCount)
+        TODO("Not yet implemented")
     }
 
     @Transactional(readOnly = true)
@@ -47,7 +39,7 @@ class PostServiceImpl(
         val commentList = commentRepository.findAllByPostId(postId)
             .map { CommentResponse.fromEntity(it) }
 
-        return PostResponseWithComments.from(post, thumbsUpRepository.thumbsUpCount(postId), commentList)
+        return PostResponseWithComments.from(post, thumbsUpCount(postId), commentList)
     }
 
     override fun createPost(principal: UserPrincipal, request: CreatePostRequest): PostResponse {
@@ -79,12 +71,8 @@ class PostServiceImpl(
         thumbsUpRepository.deleteAllByPostId(postId)
     }
 
-    override fun searchPost(keyword: String): List<PostResponse> {
-        // 검색 기준 바탕으로 검색
-        // 페이지네이션 적용 예정
-
-        // 검색어 저장
-        TODO("Not yet implemented")
+    override fun searchPost(pageable: Pageable, keyword: String?): Page<PostResponseWithThumbsUpAndComments> {
+        return postRepository.findAllByPageableAndKeyword(pageable, keyword)
     }
 
     override fun thumbsUpPost(principal: UserPrincipal, postId: Long) {
@@ -142,7 +130,7 @@ class PostServiceImpl(
         return postRepository.existsById(postId)
     }
 
-    private fun ThumbsUpRepository.thumbsUpCount(postId: Long): Long {
+    private fun thumbsUpCount(postId: Long): Long {
         return thumbsUpRepository.countByPostId(postId)
     }
 }
