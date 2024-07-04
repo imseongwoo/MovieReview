@@ -1,7 +1,5 @@
 package org.teamsparta.moviereview.domain.post.model.report
 
-import org.teamsparta.moviereview.domain.post.model.Category
-
 enum class ReportType {
     ABUSE, SPAM, INAPPROPRIATE_CONTENT, HARASSMENT, FALSE_INFORMATION;
 

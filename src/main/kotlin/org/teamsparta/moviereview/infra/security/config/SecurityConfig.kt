@@ -27,6 +27,8 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
+                    .requestMatchers(HttpMethod.GET, "/api/v1/posts", "/api/v1/posts/{postId}", "/api/v1/posts/search").permitAll()
+                    .requestMatchers("/error").permitAll()
                     .requestMatchers("/swagger-ui/**").permitAll()
                     .requestMatchers("/v3/api-docs/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/users/sign-up").permitAll()

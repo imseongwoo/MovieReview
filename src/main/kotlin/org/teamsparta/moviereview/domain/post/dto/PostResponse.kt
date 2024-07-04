@@ -14,14 +14,14 @@ data class PostResponse(
     val updatedAt: LocalDateTime
 ) {
     companion object {
-        fun from(post: Post): PostResponse {
+        fun from(post: Post, thumbUpCount: Long): PostResponse {
             return PostResponse(
                 id = post.id!!,
                 title = post.title,
-                nickname = "nickname",
+                nickname = post.user.nickname,
                 content = post.content,
                 category = post.category.name,
-                thumbUpCount = 0,
+                thumbUpCount = thumbUpCount,
                 createdAt = post.createdAt,
                 updatedAt = post.updatedAt
             )

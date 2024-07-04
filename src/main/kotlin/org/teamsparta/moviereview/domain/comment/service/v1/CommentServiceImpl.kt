@@ -24,7 +24,7 @@ class CommentServiceImpl(
         val post: Post = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("post", postId)
         val user: Users = userRepository.findByEmail(email) ?: throw IllegalStateException()
 
-        val comment: Comment = Comment(
+        val comment = Comment(
             content = request.content,
             post = post,
             user = user

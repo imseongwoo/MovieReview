@@ -6,4 +6,5 @@ import org.teamsparta.moviereview.domain.comment.model.Comment
 
 @Repository
 interface CommentRepository : JpaRepository<Comment, Long> {
+    fun findAllByPostId(postId: Long): List<Comment>
 }

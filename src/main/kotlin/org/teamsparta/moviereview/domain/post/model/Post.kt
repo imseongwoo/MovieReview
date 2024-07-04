@@ -28,7 +28,8 @@ class Post (
     var category: Category,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    var user: Users,
+    var user: Users
+
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

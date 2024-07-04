@@ -1,5 +1,8 @@
 package org.teamsparta.moviereview.domain.post.controller.v1
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
@@ -14,8 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.teamsparta.moviereview.domain.post.dto.CreatePostRequest
 import org.teamsparta.moviereview.domain.post.dto.PostResponse
-import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
+import org.teamsparta.moviereview.domain.post.dto.PostResponseWithComments
 import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
+import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.service.v1.PostService
 import org.teamsparta.moviereview.infra.security.UserPrincipal
 
@@ -26,17 +30,20 @@ class PostController(
 ) {
 
     @GetMapping
-    fun getPostList(@RequestParam category: String?): ResponseEntity<List<PostResponse>> {
-        return ResponseEntity.ok(postService.getPostList(category))
+    fun getPostList(
+        @PageableDefault(size = 10) pageable: Pageable,
+        @RequestParam category: String?
+    ): ResponseEntity<Page<PostResponse>> {
+        return ResponseEntity.ok(postService.getPostList(pageable, category))
     }
 
     @GetMapping("{postId}")
-    fun getPostById(@PathVariable postId:Long): ResponseEntity<PostResponse> {
+    fun getPostById(@PathVariable postId:Long): ResponseEntity<PostResponseWithComments> {
         return ResponseEntity.ok(postService.getPostById(postId))
     }
 
     @PostMapping
-    fun createCourse(
+    fun createPost(
         @AuthenticationPrincipal principal: UserPrincipal,
         @RequestBody request: CreatePostRequest
     ): ResponseEntity<PostResponse> {
@@ -48,8 +55,9 @@ class PostController(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable postId: Long,
         @RequestBody request: UpdatePostRequest
-    ): ResponseEntity<PostResponse> {
-        return ResponseEntity.ok(postService.updatePost(principal, postId, request))
+    ): ResponseEntity<Unit> {
+        postService.updatePost(principal, postId, request)
+        return ResponseEntity.ok().build()
     }
 
     @DeleteMapping("/{postId}")
@@ -92,7 +100,7 @@ class PostController(
         @PathVariable postId: Long,
         @RequestBody request: ReportPostRequest
     ): ResponseEntity<Unit> {
-        postService.reportPost(principal.id, postId, request)
+        postService.reportPost(principal, postId, request)
         return ResponseEntity.ok().build()
     }
 
@@ -105,4 +113,6 @@ class PostController(
         postService.cancelReportPost(principal, reportId)
         return ResponseEntity.noContent().build()
     }
+
+
 }

@@ -3,19 +3,17 @@ package org.teamsparta.moviereview.domain.admin.service.v1
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.teamsparta.moviereview.domain.common.InvalidCredentialException
+import org.teamsparta.moviereview.domain.common.exception.InvalidCredentialException
 import org.teamsparta.moviereview.domain.users.dto.AdminDto
 import org.teamsparta.moviereview.domain.users.dto.SignUpRequest
 import org.teamsparta.moviereview.domain.users.model.UserRole
 import org.teamsparta.moviereview.domain.users.model.Users
 import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
-import org.teamsparta.moviereview.infra.security.jwt.JwtPlugin
 
 @Service
 class AdminServiceImpl(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder,
-    private val jwtPlugin: JwtPlugin
+    private val passwordEncoder: PasswordEncoder
 ) : AdminService {
     @Transactional
     override fun createAdmin(request: SignUpRequest): AdminDto {
