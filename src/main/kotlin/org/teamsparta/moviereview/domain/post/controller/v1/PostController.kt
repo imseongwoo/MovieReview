@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.teamsparta.moviereview.domain.post.dto.CreatePostRequest
-import org.teamsparta.moviereview.domain.post.dto.PostResponse
-import org.teamsparta.moviereview.domain.post.dto.PostResponseWithComments
-import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
+import org.teamsparta.moviereview.domain.post.dto.*
 import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.service.v1.PostService
 import org.teamsparta.moviereview.infra.security.UserPrincipal
@@ -38,7 +35,7 @@ class PostController(
     }
 
     @GetMapping("{postId}")
-    fun getPostById(@PathVariable postId:Long): ResponseEntity<PostResponseWithComments> {
+    fun getPostById(@PathVariable postId: Long): ResponseEntity<PostResponseWithComments> {
         return ResponseEntity.ok(postService.getPostById(postId))
     }
 
@@ -71,9 +68,10 @@ class PostController(
 
     @GetMapping("/search")
     fun searchPost(
+        pageable: Pageable,
         @RequestParam keyword: String,
-        ) : ResponseEntity<List<PostResponse>> {
-        return ResponseEntity.ok(postService.searchPost(keyword))
+    ): ResponseEntity<Page<PostResponseWithThumbsUpAndComments>> {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.searchPost(pageable, keyword))
     }
 
     @PostMapping("/{postId}/thumbs-up")
