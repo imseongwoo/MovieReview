@@ -9,4 +9,5 @@ interface ThumbsUpRepository: JpaRepository<ThumbsUp, Long> {
     fun existsByPostIdAndUserId(postId: Long, userId: Long): Boolean
     fun findByPostIdAndUserId(postId: Long, userId: Long) : ThumbsUp?
     fun countByPostId(postId: Long): Long
+    fun deleteAllByPostId(postId: Long)
 }
