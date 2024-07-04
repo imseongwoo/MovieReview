@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 @Entity
 class Keyword(
-    val searchWord: String,
+    val keyword: String,
     val createdAt: LocalDateTime
 ) {
     @Id
@@ -16,10 +16,10 @@ class Keyword(
     var id: Long? = null
 
     companion object {
-        fun of(searchWord: String): Keyword {
+        fun of(keyword: String): Keyword {
             val timestamp = LocalDateTime.now()
             return Keyword(
-                searchWord.replace(" ", ""),
+                keyword.replace(" ", ""),
                 createdAt = timestamp
             )
         }
