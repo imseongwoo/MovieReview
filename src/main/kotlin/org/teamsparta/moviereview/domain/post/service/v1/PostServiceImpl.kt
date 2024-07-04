@@ -42,6 +42,7 @@ class PostServiceImpl(
         return PageImpl(postResponseList, pageable, totalCount)
     }
 
+    @Transactional(readOnly = true)
     override fun getPostById(postId: Long): PostResponseWithComments {
         // 좋아요 눌렀는지 여부(?)
         val post = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)

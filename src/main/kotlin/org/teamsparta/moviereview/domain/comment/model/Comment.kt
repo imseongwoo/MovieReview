@@ -1,6 +1,7 @@
 package org.teamsparta.moviereview.domain.comment.model
 
 import jakarta.persistence.*
+import org.hibernate.annotations.SQLRestriction
 import org.teamsparta.moviereview.domain.comment.dto.CommentUpdateRequest
 import org.teamsparta.moviereview.domain.common.time.BaseEntity
 import org.teamsparta.moviereview.domain.post.model.Post
@@ -10,16 +11,15 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "comment")
+@SQLRestriction("deleted_at is null")
 class Comment(
     @Column
     var content: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "review_id")
     var post: Post,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
     var user: Users,
 ) : BaseEntity() {
     @Id
