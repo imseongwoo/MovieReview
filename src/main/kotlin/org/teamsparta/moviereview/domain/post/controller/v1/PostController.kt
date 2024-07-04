@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController
 import org.teamsparta.moviereview.domain.post.dto.CreatePostRequest
 import org.teamsparta.moviereview.domain.post.dto.PostResponse
 import org.teamsparta.moviereview.domain.post.dto.PostResponseWithComments
-import org.teamsparta.moviereview.domain.post.dto.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
+import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.service.v1.PostService
 import org.teamsparta.moviereview.infra.security.UserPrincipal
 
@@ -96,20 +96,22 @@ class PostController(
 
     @PostMapping("/{postId}/reports")
     fun reportPost(
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable postId: Long,
         @RequestBody request: ReportPostRequest
     ): ResponseEntity<Unit> {
-        postService.reportPost(postId, request)
+        postService.reportPost(principal, postId, request)
         return ResponseEntity.ok().build()
     }
 
     @DeleteMapping("/{postId}/reports/{reportId}")
     fun cancelReportPost(
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable postId: Long,
         @PathVariable reportId: Long
     ): ResponseEntity<Unit> {
-        postService.cancelReportPost(reportId)
-        return ResponseEntity.ok().build()
+        postService.cancelReportPost(principal, reportId)
+        return ResponseEntity.noContent().build()
     }
 
 

@@ -4,7 +4,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.teamsparta.moviereview.domain.common.InvalidCredentialException
+import org.teamsparta.moviereview.domain.common.exception.InvalidCredentialException
 import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
 import org.teamsparta.moviereview.domain.common.util.RedisUtils
 import org.teamsparta.moviereview.domain.users.dto.LoginRequest
