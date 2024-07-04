@@ -1,18 +1,25 @@
 package org.teamsparta.moviereview.domain.admin.service.v1
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.teamsparta.moviereview.domain.common.exception.InvalidCredentialException
+import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
+import org.teamsparta.moviereview.domain.post.dto.PostResponse
+import org.teamsparta.moviereview.domain.post.dto.UpdateCategoryRequest
+import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
 import org.teamsparta.moviereview.domain.users.dto.AdminDto
 import org.teamsparta.moviereview.domain.users.dto.SignUpRequest
 import org.teamsparta.moviereview.domain.users.model.UserRole
 import org.teamsparta.moviereview.domain.users.model.Users
 import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
+import org.teamsparta.moviereview.infra.security.UserPrincipal
 
 @Service
 class AdminServiceImpl(
     private val userRepository: UserRepository,
+    private val postRepository: PostRepository,
     private val passwordEncoder: PasswordEncoder
 ) : AdminService {
     @Transactional
@@ -32,5 +39,12 @@ class AdminServiceImpl(
             )
         )
         return AdminDto.fromEntity(admin)
+    }
+
+    @Transactional
+    override fun updatePostCategory(postId: Long, request: UpdateCategoryRequest) {
+        val (category) = request
+        postRepository.findByIdOrNull(postId)?.apply { this.updateCategory(category) }
+            ?: throw ModelNotFoundException("Post", postId)
     }
 }

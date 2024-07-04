@@ -51,6 +51,10 @@ class Post (
         this.category = Category.fromString(category)
     }
 
+    fun updateCategory(category: String) {
+        this.category = Category.fromString(category)
+    }
+
     fun checkPermission(userId: Long, role: String): Boolean {
         return user.id == userId || role == "ROLE_ADMIN"
     }
