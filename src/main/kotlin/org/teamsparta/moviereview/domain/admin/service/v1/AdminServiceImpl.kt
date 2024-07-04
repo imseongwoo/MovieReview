@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.teamsparta.moviereview.domain.common.exception.InvalidCredentialException
 import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
 import org.teamsparta.moviereview.domain.post.dto.UpdateCategoryRequest
+import org.teamsparta.moviereview.domain.post.dto.report.ReportResponse
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
 import org.teamsparta.moviereview.domain.post.repository.v1.report.ReportRepository
 import org.teamsparta.moviereview.domain.users.dto.AdminDto
@@ -59,5 +60,11 @@ class AdminServiceImpl(
     override fun rejectReport(reportId: Long) {
         reportRepository.findByIdOrNull(reportId)?.let { reportRepository.delete(it) }
             ?: throw ModelNotFoundException("Report", reportId)
+    }
+
+    override fun getReportList(): List<ReportResponse> {
+        val reports = reportRepository.findAll()
+
+        return reports.map { ReportResponse.from(it) }
     }
 }

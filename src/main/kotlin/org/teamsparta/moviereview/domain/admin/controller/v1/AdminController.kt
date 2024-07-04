@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import org.teamsparta.moviereview.domain.admin.service.v1.AdminService
 import org.teamsparta.moviereview.domain.post.dto.UpdateCategoryRequest
+import org.teamsparta.moviereview.domain.post.dto.report.ReportResponse
 import org.teamsparta.moviereview.domain.users.dto.AdminDto
 import org.teamsparta.moviereview.domain.users.dto.SignUpRequest
 
@@ -30,6 +31,11 @@ class AdminController(
     ): ResponseEntity<Unit> {
         adminService.updatePostCategory(postId, updateCategoryRequest)
         return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/reports")
+    fun getReports(): ResponseEntity<List<ReportResponse>> {
+        return ResponseEntity.ok(adminService.getReportList())
     }
 
     @PatchMapping("reports/{reportId}")
