@@ -1,9 +1,9 @@
-package org.teamsparta.moviereview.domain.post.controller.v1.search
+package org.teamsparta.moviereview.domain.post.controller.v1.keyword
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.teamsparta.moviereview.domain.post.service.v1.search.KeywordService
+import org.teamsparta.moviereview.domain.post.service.v1.keyword.KeywordService
 
 @RequestMapping("/api/v1/keywords")
 @RestController

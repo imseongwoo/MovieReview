@@ -4,4 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.teamsparta.moviereview.domain.post.model.report.Report
 
 interface ReportRepository: JpaRepository<Report, Long> {
+    fun findAllByPostId(postId: Long): List<Report>
 }

@@ -1,4 +1,4 @@
-package org.teamsparta.moviereview.domain.post.repository.v1.search
+package org.teamsparta.moviereview.domain.post.repository.v1.keyword
 
 import java.time.LocalDateTime
 

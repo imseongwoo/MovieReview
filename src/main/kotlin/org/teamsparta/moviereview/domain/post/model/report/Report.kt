@@ -6,7 +6,7 @@ import org.teamsparta.moviereview.domain.users.model.Users
 
 @Entity
 class Report(
-    @Enumerated(EnumType.STRING) var reportType: ReportType,
+    @Enumerated(EnumType.STRING) val reportType: ReportType,
 
     @Column val description: String,
 

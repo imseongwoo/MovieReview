@@ -1,4 +1,4 @@
-package org.teamsparta.moviereview.domain.post.model.search
+package org.teamsparta.moviereview.domain.post.model.keyword
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue

@@ -1,6 +1,6 @@
-package org.teamsparta.moviereview.domain.post.repository.v1.search
+package org.teamsparta.moviereview.domain.post.repository.v1.keyword
 
-import org.teamsparta.moviereview.domain.post.model.search.QKeyword
+import org.teamsparta.moviereview.domain.post.model.keyword.QKeyword
 import org.teamsparta.moviereview.infra.querydsl.QueryDslSupport
 import java.time.LocalDateTime
 
