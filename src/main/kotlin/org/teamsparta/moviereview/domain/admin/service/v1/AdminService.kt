@@ -8,7 +8,7 @@ import org.teamsparta.moviereview.domain.users.dto.SignUpRequest
 interface AdminService {
     fun createAdmin(request: SignUpRequest): AdminDto
     fun updatePostCategory(postId: Long, request: UpdateCategoryRequest)
-    fun deleteReportedPost(reportId: Long): String
+    fun deleteReportedPost(reportId: Long)
     fun rejectReport(reportId: Long)
     fun getReportList(): List<ReportResponse>
 }

@@ -50,10 +50,14 @@ class AdminServiceImpl(
     }
 
     @Transactional
-    override fun deleteReportedPost(reportId: Long): String {
-        reportRepository.findByIdOrNull(reportId)?.apply { this.post.softDelete() }
+    override fun deleteReportedPost(reportId: Long) {
+        val report = reportRepository.findByIdOrNull(reportId)
             ?: throw ModelNotFoundException("Report", reportId)
-        return "신고된 게시글이 삭제되었습니다."
+
+        report.post.softDelete()
+
+        val reports = reportRepository.findAllByPostId(report.post.id!!)
+        reportRepository.deleteAll(reports)
     }
 
     @Transactional

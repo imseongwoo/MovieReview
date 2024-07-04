@@ -41,8 +41,9 @@ class AdminController(
     @PatchMapping("reports/{reportId}")
     fun approveReport(
         @PathVariable reportId: Long
-    ): ResponseEntity<String> {
-        return ResponseEntity.status(HttpStatus.OK).body(adminService.deleteReportedPost(reportId))
+    ): ResponseEntity<Unit> {
+        adminService.deleteReportedPost(reportId)
+        return ResponseEntity.status(HttpStatus.OK).build()
     }
 
     @DeleteMapping("reports/{reportId}")
