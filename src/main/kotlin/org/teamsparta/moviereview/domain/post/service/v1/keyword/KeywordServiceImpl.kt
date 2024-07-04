@@ -1,10 +1,10 @@
-package org.teamsparta.moviereview.domain.post.service.v1.search
+package org.teamsparta.moviereview.domain.post.service.v1.keyword
 
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.teamsparta.moviereview.domain.post.model.search.Keyword
-import org.teamsparta.moviereview.domain.post.repository.v1.search.KeywordRepository
+import org.teamsparta.moviereview.domain.post.model.keyword.Keyword
+import org.teamsparta.moviereview.domain.post.repository.v1.keyword.KeywordRepository
 import java.time.LocalDateTime
 
 @Service

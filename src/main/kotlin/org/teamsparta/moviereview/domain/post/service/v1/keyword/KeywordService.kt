@@ -1,4 +1,4 @@
-package org.teamsparta.moviereview.domain.post.service.v1.search
+package org.teamsparta.moviereview.domain.post.service.v1.keyword
 
 interface KeywordService {
     fun saveKeyword(searchWord: String)
