@@ -45,7 +45,7 @@ class CommentServiceImpl(
         val comment: Comment =
             commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("comment", commentId)
 
-        comment.delete()
+        comment.softDelete()
         commentRepository.save(comment)
     }
 }

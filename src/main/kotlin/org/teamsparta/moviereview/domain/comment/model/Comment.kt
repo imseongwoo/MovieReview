@@ -1,7 +1,6 @@
 package org.teamsparta.moviereview.domain.comment.model
 
 import jakarta.persistence.*
-import org.teamsparta.moviereview.domain.comment.dto.CommentResponse
 import org.teamsparta.moviereview.domain.comment.dto.CommentUpdateRequest
 import org.teamsparta.moviereview.domain.common.time.BaseEntity
 import org.teamsparta.moviereview.domain.post.model.Post
@@ -29,9 +28,5 @@ class Comment(
     fun updateContent(commentUpdateRequest: CommentUpdateRequest) {
         this.content = commentUpdateRequest.content
         this.updatedAt = LocalDateTime.now()
-    }
-
-    fun delete() {
-        this.deletedAt = LocalDateTime.now()
     }
 }
