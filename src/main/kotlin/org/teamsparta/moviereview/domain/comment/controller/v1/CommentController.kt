@@ -27,16 +27,18 @@ class CommentController(
 
     @PutMapping("/{commentId}")
     fun updateComment(
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable commentId: Long,
         @RequestBody request: CommentUpdateRequest
     ): ResponseEntity<CommentResponse> {
-        return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(commentId, request))
+        return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(commentId, request, principal.email))
     }
 
     @DeleteMapping("/{commentId}")
     fun deleteComment(
+        @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable commentId: Long,
     ): ResponseEntity<Unit> {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(commentService.deleteComment(commentId))
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(commentService.deleteComment(commentId, principal.email))
     }
 }
