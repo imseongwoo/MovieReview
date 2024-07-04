@@ -4,14 +4,11 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
 import org.teamsparta.moviereview.domain.admin.service.v1.AdminService
-import org.teamsparta.moviereview.domain.post.dto.PostResponse
 import org.teamsparta.moviereview.domain.post.dto.UpdateCategoryRequest
 import org.teamsparta.moviereview.domain.users.dto.AdminDto
 import org.teamsparta.moviereview.domain.users.dto.SignUpRequest
-import org.teamsparta.moviereview.infra.security.UserPrincipal
 
 @RequestMapping("/api/v1/admin")
 @RestController
@@ -40,5 +37,13 @@ class AdminController(
         @PathVariable reportId: Long
     ): ResponseEntity<String> {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.deleteReportedPost(reportId))
+    }
+
+    @DeleteMapping("reports/{reportId}")
+    fun rejectReport(
+        @PathVariable reportId: Long
+    ): ResponseEntity<Unit> {
+        adminService.rejectReport(reportId)
+        return ResponseEntity.noContent().build()
     }
 }

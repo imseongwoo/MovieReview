@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.teamsparta.moviereview.domain.common.exception.InvalidCredentialException
 import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
-import org.teamsparta.moviereview.domain.post.dto.PostResponse
 import org.teamsparta.moviereview.domain.post.dto.UpdateCategoryRequest
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
 import org.teamsparta.moviereview.domain.post.repository.v1.report.ReportRepository
@@ -15,7 +14,6 @@ import org.teamsparta.moviereview.domain.users.dto.SignUpRequest
 import org.teamsparta.moviereview.domain.users.model.UserRole
 import org.teamsparta.moviereview.domain.users.model.Users
 import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
-import org.teamsparta.moviereview.infra.security.UserPrincipal
 
 @Service
 class AdminServiceImpl(
@@ -55,5 +53,11 @@ class AdminServiceImpl(
         reportRepository.findByIdOrNull(reportId)?.apply { this.post.softDelete() }
             ?: throw ModelNotFoundException("Report", reportId)
         return "신고된 게시글이 삭제되었습니다."
+    }
+
+    @Transactional
+    override fun rejectReport(reportId: Long) {
+        reportRepository.findByIdOrNull(reportId)?.let { reportRepository.delete(it) }
+            ?: throw ModelNotFoundException("Report", reportId)
     }
 }
