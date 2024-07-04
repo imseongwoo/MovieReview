@@ -7,12 +7,14 @@ import org.teamsparta.moviereview.domain.common.exception.AccessDeniedException
 import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
 import org.teamsparta.moviereview.domain.post.dto.CreatePostRequest
 import org.teamsparta.moviereview.domain.post.dto.PostResponse
-import org.teamsparta.moviereview.domain.post.dto.ReportPostRequest
+import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
 import org.teamsparta.moviereview.domain.post.model.Category
 import org.teamsparta.moviereview.domain.post.model.Post
+import org.teamsparta.moviereview.domain.post.model.report.Report
 import org.teamsparta.moviereview.domain.post.model.thumbsup.ThumbsUp
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
+import org.teamsparta.moviereview.domain.post.repository.v1.report.ReportRepository
 import org.teamsparta.moviereview.domain.post.repository.v1.thumbsup.ThumbsUpRepository
 import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
 import org.teamsparta.moviereview.infra.security.UserPrincipal
@@ -21,20 +23,21 @@ import org.teamsparta.moviereview.infra.security.UserPrincipal
 class PostServiceImpl(
     private val postRepository: PostRepository,
     private val thumbsUpRepository: ThumbsUpRepository,
-    private val userRepository: UserRepository
-): PostService {
+    private val userRepository: UserRepository,
+    private val reportRepository: ReportRepository,
+) : PostService {
     override fun getPostList(category: String?): List<PostResponse> {
         // 페이지네이션 적용 예정, 좋아요 개수 추가 예정, 좋아요 눌렀는지 여부(?)
         return if (category == null) postRepository.findAllByOrderByCreatedAtDesc()
             .map { PostResponse.from(it) }
-            else postRepository.findAllByCategoryOrderByCreatedAtDesc(Category.fromString(category))
+        else postRepository.findAllByCategoryOrderByCreatedAtDesc(Category.fromString(category))
             .map { PostResponse.from(it) }
     }
 
     override fun getPostById(postId: Long): PostResponse {
         // Response에 댓글 추가, 좋아요 개수 추가 예정, 좋아요 눌렀는지 여부(?)
         return postRepository.findByIdOrNull(postId)
-            ?. let { PostResponse.from(it) }
+            ?.let { PostResponse.from(it) }
             ?: throw ModelNotFoundException("Post", postId)
     }
 
@@ -49,9 +52,9 @@ class PostServiceImpl(
     override fun updatePost(principal: UserPrincipal, postId: Long, request: UpdatePostRequest): PostResponse {
         // Response에 좋아요 개수, 댓글 추가 예정, 좋아요 눌렀는지 여부(?)
         return postRepository.findByIdOrNull(postId)
-            ?. also { checkPermission(it, principal) }
-            ?. apply { this.updatePost(request.title, request.content, request.category) }
-            ?. let { PostResponse.from(it) }
+            ?.also { checkPermission(it, principal) }
+            ?.apply { this.updatePost(request.title, request.content, request.category) }
+            ?.let { PostResponse.from(it) }
             ?: throw ModelNotFoundException("Post", postId)
     }
 
@@ -59,8 +62,8 @@ class PostServiceImpl(
     override fun deletePost(principal: UserPrincipal, postId: Long) {
         // 포스트를 소프트 딜리트 할 때, 댓글과 좋아요는 어떻게 처리할 것인가?
         postRepository.findByIdOrNull(postId)
-            ?. also { checkPermission(it, principal)}
-            ?. apply { this.softDelete() }
+            ?.also { checkPermission(it, principal) }
+            ?.apply { this.softDelete() }
             ?: throw ModelNotFoundException("Post", postId)
     }
 
@@ -73,16 +76,16 @@ class PostServiceImpl(
     }
 
     override fun thumbsUpPost(principal: UserPrincipal, postId: Long) {
-        if(!isPostExists(postId)) throw ModelNotFoundException("Post", postId)
+        if (!isPostExists(postId)) throw ModelNotFoundException("Post", postId)
 
-        if(thumbsUpRepository.existsByPostIdAndUserId(postId, principal.id))
+        if (thumbsUpRepository.existsByPostIdAndUserId(postId, principal.id))
             throw IllegalArgumentException("You've already given a thumbs up to this post")
 
-        thumbsUpRepository.save(ThumbsUp(postId,principal.id))
+        thumbsUpRepository.save(ThumbsUp(postId, principal.id))
     }
 
     override fun cancelThumbsUpPost(principal: UserPrincipal, postId: Long) {
-        if(!isPostExists(postId)) throw ModelNotFoundException("Post", postId)
+        if (!isPostExists(postId)) throw ModelNotFoundException("Post", postId)
 
         val thumbsUp = thumbsUpRepository.findByPostIdAndUserId(postId, principal.id)
             ?: throw IllegalArgumentException("You've not given a thumbs up to this post, so it can't be canceled")
@@ -90,21 +93,19 @@ class PostServiceImpl(
         thumbsUpRepository.delete(thumbsUp)
     }
 
-    override fun reportPost(postId: Long, request: ReportPostRequest) {
-        // 포스트 조회
+    override fun reportPost(userId: Long, postId: Long, request: ReportPostRequest) {
+        val post = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
+        val (reportType, description) = request
+        val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("User", userId)
 
-        // Request를 엔티티로 변경하여 저장
-
-        TODO("Not yet implemented")
+        reportRepository.save(Report.of(reportType, description, user, post))
     }
 
-    override fun cancelReportPost(reportId: Long) {
-        // report 조회
-
-        // 본인이 작성한 신고인지 확인
-
-        // report 삭제
-        TODO("Not yet implemented")
+    override fun cancelReportPost(principal: UserPrincipal, reportId: Long) {
+        reportRepository.findByIdOrNull(reportId)
+            ?.also { checkReportPermission(it, principal) }
+            ?.let { reportRepository.delete(it) }
+            ?: throw ModelNotFoundException("Post", reportId)
     }
 
     private fun checkPermission(post: Post, principal: UserPrincipal) {
@@ -114,6 +115,15 @@ class PostServiceImpl(
                 principal.authorities.first().authority
             )
         ) { throw AccessDeniedException("You do not own this post") }
+    }
+
+    private fun checkReportPermission(report: Report, principal: UserPrincipal) {
+        check(
+            report.checkReportPermission(
+                principal.id,
+                principal.authorities.first().authority
+            )
+        ) { throw AccessDeniedException("You do not own this report") }
     }
 
     private fun isPostExists(postId: Long): Boolean {
