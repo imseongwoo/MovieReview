@@ -7,6 +7,7 @@ import org.teamsparta.moviereview.domain.comment.dto.CommentResponse
 import org.teamsparta.moviereview.domain.comment.dto.CommentUpdateRequest
 import org.teamsparta.moviereview.domain.comment.model.Comment
 import org.teamsparta.moviereview.domain.comment.repository.v1.CommentRepository
+import org.teamsparta.moviereview.domain.common.exception.AccessDeniedException
 import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
 import org.teamsparta.moviereview.domain.post.model.Post
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
@@ -32,20 +33,23 @@ class CommentServiceImpl(
         return CommentResponse.fromEntity(comment)
     }
 
-    override fun updateComment(commentId: Long, request: CommentUpdateRequest): CommentResponse {
+    override fun updateComment(commentId: Long, request: CommentUpdateRequest, email: String): CommentResponse {
         val comment: Comment =
             commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("comment", commentId)
+        val user: Users = userRepository.findByEmail(email) ?: throw IllegalStateException()
+        if (comment.checkPermission(user)) {
+            comment.updateContent(request)
+        } else throw AccessDeniedException("업데이트 권한이 없습니다.")
 
-        comment.updateContent(request)
-        commentRepository.save(comment)
         return CommentResponse.fromEntity(comment)
     }
 
-    override fun deleteComment(commentId: Long) {
+    override fun deleteComment(commentId: Long, email: String) {
         val comment: Comment =
             commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("comment", commentId)
-
-        comment.delete()
-        commentRepository.save(comment)
+        val user: Users = userRepository.findByEmail(email) ?: throw IllegalStateException()
+        if (comment.checkPermission(user)) {
+            comment.softDelete()
+        } else throw AccessDeniedException("삭제 권한이 없습니다.")
     }
 }
