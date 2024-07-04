@@ -1,5 +1,6 @@
 package org.teamsparta.moviereview.domain.post.service.v1.search
 
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.teamsparta.moviereview.domain.post.model.search.Keyword
@@ -25,5 +26,11 @@ class KeywordServiceImpl(private val keywordRepository: KeywordRepository): Keyw
         val now = LocalDateTime.now()
         val from = now.minusDays(1)
         return keywordRepository.getHotKeywords(from, now)
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    override fun deleteOldKeywords() {
+        val expiryDate = LocalDateTime.now().minusDays(3)
+        keywordRepository.deleteKeywords(expiryDate)
     }
 }
