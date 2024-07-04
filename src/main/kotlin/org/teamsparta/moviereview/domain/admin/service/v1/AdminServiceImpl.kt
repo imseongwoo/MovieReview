@@ -9,6 +9,7 @@ import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
 import org.teamsparta.moviereview.domain.post.dto.PostResponse
 import org.teamsparta.moviereview.domain.post.dto.UpdateCategoryRequest
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
+import org.teamsparta.moviereview.domain.post.repository.v1.report.ReportRepository
 import org.teamsparta.moviereview.domain.users.dto.AdminDto
 import org.teamsparta.moviereview.domain.users.dto.SignUpRequest
 import org.teamsparta.moviereview.domain.users.model.UserRole
@@ -20,6 +21,7 @@ import org.teamsparta.moviereview.infra.security.UserPrincipal
 class AdminServiceImpl(
     private val userRepository: UserRepository,
     private val postRepository: PostRepository,
+    private val reportRepository: ReportRepository,
     private val passwordEncoder: PasswordEncoder
 ) : AdminService {
     @Transactional
@@ -46,5 +48,12 @@ class AdminServiceImpl(
         val (category) = request
         postRepository.findByIdOrNull(postId)?.apply { this.updateCategory(category) }
             ?: throw ModelNotFoundException("Post", postId)
+    }
+
+    @Transactional
+    override fun deleteReportedPost(reportId: Long): String {
+        reportRepository.findByIdOrNull(reportId)?.apply { this.post.softDelete() }
+            ?: throw ModelNotFoundException("Report", reportId)
+        return "신고된 게시글이 삭제되었습니다."
     }
 }

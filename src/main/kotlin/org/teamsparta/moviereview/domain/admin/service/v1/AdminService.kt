@@ -9,4 +9,5 @@ import org.teamsparta.moviereview.infra.security.UserPrincipal
 interface AdminService {
     fun createAdmin(request: SignUpRequest): AdminDto
     fun updatePostCategory(postId: Long, request: UpdateCategoryRequest)
+    fun deleteReportedPost(reportId: Long): String
 }

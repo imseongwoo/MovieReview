@@ -34,4 +34,11 @@ class AdminController(
         adminService.updatePostCategory(postId, updateCategoryRequest)
         return ResponseEntity.ok().build()
     }
+
+    @PatchMapping("reports/{reportId}")
+    fun approveReport(
+        @PathVariable reportId: Long
+    ): ResponseEntity<String> {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.deleteReportedPost(reportId))
+    }
 }
