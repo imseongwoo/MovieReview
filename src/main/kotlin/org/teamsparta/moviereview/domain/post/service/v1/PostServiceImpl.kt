@@ -3,6 +3,7 @@ package org.teamsparta.moviereview.domain.post.service.v1
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.teamsparta.moviereview.domain.common.exception.AccessDeniedException
 import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
 import org.teamsparta.moviereview.domain.post.dto.CreatePostRequest
 import org.teamsparta.moviereview.domain.post.dto.PostResponse
@@ -13,15 +14,17 @@ import org.teamsparta.moviereview.domain.post.model.Post
 import org.teamsparta.moviereview.domain.post.model.thumbsup.ThumbsUp
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
 import org.teamsparta.moviereview.domain.post.repository.v1.thumbsup.ThumbsUpRepository
-import org.teamsparta.moviereview.domain.users.model.Users
+import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
+import org.teamsparta.moviereview.infra.security.UserPrincipal
 
 @Service
 class PostServiceImpl(
     private val postRepository: PostRepository,
-    private val thumbsUpRepository: ThumbsUpRepository
+    private val thumbsUpRepository: ThumbsUpRepository,
+    private val userRepository: UserRepository
 ): PostService {
     override fun getPostList(category: String?): List<PostResponse> {
-        // 페이지네이션 적용 예정
+        // 페이지네이션 적용 예정, 좋아요 개수 추가 예정, 좋아요 눌렀는지 여부(?)
         return if (category == null) postRepository.findAllByOrderByCreatedAtDesc()
             .map { PostResponse.from(it) }
             else postRepository.findAllByCategoryOrderByCreatedAtDesc(Category.fromString(category))
@@ -29,34 +32,35 @@ class PostServiceImpl(
     }
 
     override fun getPostById(postId: Long): PostResponse {
+        // Response에 댓글 추가, 좋아요 개수 추가 예정, 좋아요 눌렀는지 여부(?)
         return postRepository.findByIdOrNull(postId)
             ?. let { PostResponse.from(it) }
             ?: throw ModelNotFoundException("Post", postId)
     }
 
-    override fun createPost(request: CreatePostRequest): PostResponse {
-        // 로그인한 유저인지 확인, 나중에 수정
-        val user = Users(email = "12345@gmail.com", password = "1234", nickname = "nickname")
+    override fun createPost(principal: UserPrincipal, request: CreatePostRequest): PostResponse {
+        val user = userRepository.findByIdOrNull(principal.id) ?: throw ModelNotFoundException("User", principal.id)
 
         return postRepository.save(Post.of(request.title, request.content, request.category, user))
             .let { PostResponse.from(it) }
     }
 
     @Transactional
-    override fun updatePost(postId: Long, request: UpdatePostRequest): PostResponse {
-        // 본인이 작성한 포스트 인지 확인, 나중에 추가
-
+    override fun updatePost(principal: UserPrincipal, postId: Long, request: UpdatePostRequest): PostResponse {
+        // Response에 좋아요 개수, 댓글 추가 예정, 좋아요 눌렀는지 여부(?)
         return postRepository.findByIdOrNull(postId)
-            ?.apply { this.updatePost(request.title, request.content, request.category) }
-            ?.let { PostResponse.from(it) }
+            ?. also { checkPermission(it, principal) }
+            ?. apply { this.updatePost(request.title, request.content, request.category) }
+            ?. let { PostResponse.from(it) }
             ?: throw ModelNotFoundException("Post", postId)
     }
 
     @Transactional
-    override fun deletePost(postId: Long) {
-        // 본인이 작성한 포스트인지 확인, 나중에 추가
+    override fun deletePost(principal: UserPrincipal, postId: Long) {
+        // 포스트를 소프트 딜리트 할 때, 댓글과 좋아요는 어떻게 처리할 것인가?
         postRepository.findByIdOrNull(postId)
-            ?.apply { this.softDelete() }
+            ?. also { checkPermission(it, principal)}
+            ?. apply { this.softDelete() }
             ?: throw ModelNotFoundException("Post", postId)
     }
 
@@ -68,25 +72,19 @@ class PostServiceImpl(
         TODO("Not yet implemented")
     }
 
-    override fun thumbsUpPost(postId: Long) {
-        // 유저 로그인 확인, 나중에 수정
-        val user = Users(email = "12345@gmail.com", password = "1234", nickname = "nickname")
+    override fun thumbsUpPost(principal: UserPrincipal, postId: Long) {
+        if(!isPostExists(postId)) throw ModelNotFoundException("Post", postId)
 
-        if(thumbsUpRepository.existsByPostIdAndUserId(postId, user.id!!))
+        if(thumbsUpRepository.existsByPostIdAndUserId(postId, principal.id))
             throw IllegalArgumentException("You've already given a thumbs up to this post")
 
-        val post = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
-
-        thumbsUpRepository.save(ThumbsUp(post,user))
+        thumbsUpRepository.save(ThumbsUp(postId,principal.id))
     }
 
-    override fun cancelThumbsUpPost(postId: Long) {
-        // 유저 로그인 확인, 나중에 수정
-        val user = Users(email = "12345@gmail.com", password = "1234", nickname = "nickname")
+    override fun cancelThumbsUpPost(principal: UserPrincipal, postId: Long) {
+        if(!isPostExists(postId)) throw ModelNotFoundException("Post", postId)
 
-        if(!postRepository.existsById(postId)) throw ModelNotFoundException("Post", postId)
-
-        val thumbsUp = thumbsUpRepository.findByPostIdAndUserId(postId, user.id!!)
+        val thumbsUp = thumbsUpRepository.findByPostIdAndUserId(postId, principal.id)
             ?: throw IllegalArgumentException("You've not given a thumbs up to this post, so it can't be canceled")
 
         thumbsUpRepository.delete(thumbsUp)
@@ -107,5 +105,18 @@ class PostServiceImpl(
 
         // report 삭제
         TODO("Not yet implemented")
+    }
+
+    private fun checkPermission(post: Post, principal: UserPrincipal) {
+        check(
+            post.checkPermission(
+                principal.id,
+                principal.authorities.first().authority
+            )
+        ) { throw AccessDeniedException("You do not own this post") }
+    }
+
+    private fun isPostExists(postId: Long): Boolean {
+        return postRepository.existsById(postId)
     }
 }
