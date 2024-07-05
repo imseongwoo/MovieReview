@@ -1,4 +1,4 @@
-package org.teamsparta.moviereview.domain.post.service.v2
+package org.teamsparta.moviereview.domain.post.service.v3
 
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
@@ -28,18 +28,18 @@ import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
 import org.teamsparta.moviereview.infra.security.UserPrincipal
 
 @Service
-class PostServiceImpl2(
+class PostServiceImpl3(
     private val postRepository: PostRepository,
     private val thumbsUpRepository: ThumbsUpRepository,
     private val userRepository: UserRepository,
     private val commentRepository: CommentRepository,
     private val reportRepository: ReportRepository,
     private val keywordRepository: KeywordRepository
-): PostService2 {
+) : PostService3 {
     override fun getPostList(pageable: Pageable, category: String?): Page<PostResponse> {
         val (totalCount, post, thumbsUpCount) = postRepository.findAllByPageableAndCategory(pageable, category)
 
-        val postResponseList = post.zip(thumbsUpCount) { a, b -> PostResponse.from(a,b) }
+        val postResponseList = post.zip(thumbsUpCount) { a, b -> PostResponse.from(a, b) }
 
         return PageImpl(postResponseList, pageable, totalCount)
     }
@@ -64,8 +64,8 @@ class PostServiceImpl2(
     @Transactional
     override fun updatePost(principal: UserPrincipal, postId: Long, request: UpdatePostRequest) {
         postRepository.findByIdOrNull(postId)
-            ?. also { checkPermission(it, principal) }
-            ?. apply { this.updatePost(request.title, request.content, request.category) }
+            ?.also { checkPermission(it, principal) }
+            ?.apply { this.updatePost(request.title, request.content, request.category) }
             ?: throw ModelNotFoundException("Post", postId)
     }
 
@@ -73,8 +73,8 @@ class PostServiceImpl2(
     override fun deletePost(principal: UserPrincipal, postId: Long) {
 
         postRepository.findByIdOrNull(postId)
-            ?. also { checkPermission(it, principal) }
-            ?. apply { this.softDelete() }
+            ?.also { checkPermission(it, principal) }
+            ?.apply { this.softDelete() }
             ?: throw ModelNotFoundException("Post", postId)
 
         commentRepository.findAllByPostId(postId)
@@ -83,7 +83,7 @@ class PostServiceImpl2(
         thumbsUpRepository.deleteAllByPostId(postId)
     }
 
-    @Cacheable("searchPost", cacheManager = "caffeineCacheManager")
+    @Cacheable("searchPost", cacheManager = "redisCacheManager")
     override fun searchPost(pageable: Pageable, keyword: String?): Page<PostResponse> {
         keyword?.let { saveSearchKeyword(keyword) }
         return postRepository.searchPostByPageableAndKeyword(pageable, keyword)
@@ -117,8 +117,8 @@ class PostServiceImpl2(
 
     override fun cancelReportPost(principal: UserPrincipal, reportId: Long) {
         reportRepository.findByIdOrNull(reportId)
-            ?. also { checkReportPermission(it, principal) }
-            ?. let { reportRepository.delete(it) }
+            ?.also { checkReportPermission(it, principal) }
+            ?.let { reportRepository.delete(it) }
             ?: throw ModelNotFoundException("Report", reportId)
     }
 
