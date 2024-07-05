@@ -71,9 +71,10 @@ class PostController(
 
     @GetMapping("/search")
     fun searchPost(
+        pageable: Pageable,
         @RequestParam keyword: String,
-        ) : ResponseEntity<List<PostResponse>> {
-        return ResponseEntity.ok(postService.searchPost(keyword))
+    ): ResponseEntity<Page<PostResponse>> {
+        return ResponseEntity.status(HttpStatus.OK).body(postService.searchPost(pageable, keyword))
     }
 
     @PostMapping("/{postId}/thumbs-up")

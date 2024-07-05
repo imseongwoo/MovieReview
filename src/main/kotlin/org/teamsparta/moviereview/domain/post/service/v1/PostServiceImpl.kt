@@ -16,13 +16,16 @@ import org.teamsparta.moviereview.domain.post.dto.PostResponseWithComments
 import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
 import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.model.Post
+import org.teamsparta.moviereview.domain.post.model.keyword.Keyword
 import org.teamsparta.moviereview.domain.post.model.report.Report
 import org.teamsparta.moviereview.domain.post.model.thumbsup.ThumbsUp
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
+import org.teamsparta.moviereview.domain.post.repository.v1.keyword.KeywordRepository
 import org.teamsparta.moviereview.domain.post.repository.v1.report.ReportRepository
 import org.teamsparta.moviereview.domain.post.repository.v1.thumbsup.ThumbsUpRepository
 import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
 import org.teamsparta.moviereview.infra.security.UserPrincipal
+import java.time.LocalDateTime
 
 @Service
 class PostServiceImpl(
@@ -30,7 +33,8 @@ class PostServiceImpl(
     private val thumbsUpRepository: ThumbsUpRepository,
     private val userRepository: UserRepository,
     private val commentRepository: CommentRepository,
-    private val reportRepository: ReportRepository
+    private val reportRepository: ReportRepository,
+    private val keywordRepository: KeywordRepository
 ): PostService {
     override fun getPostList(pageable: Pageable, category: String?): Page<PostResponse> {
         val (totalCount, post, thumbsUpCount) = postRepository.findAllByPageableAndCategory(pageable, category)
@@ -79,12 +83,9 @@ class PostServiceImpl(
         thumbsUpRepository.deleteAllByPostId(postId)
     }
 
-    override fun searchPost(keyword: String): List<PostResponse> {
-        // 검색 기준 바탕으로 검색
-        // 페이지네이션 적용 예정
-
-        // 검색어 저장
-        TODO("Not yet implemented")
+    override fun searchPost(pageable: Pageable, keyword: String?): Page<PostResponse> {
+        keyword?.let { saveSearchKeyword(keyword) }
+        return postRepository.searchPostByPageableAndKeyword(pageable, keyword)
     }
 
     override fun thumbsUpPost(principal: UserPrincipal, postId: Long) {
@@ -144,5 +145,10 @@ class PostServiceImpl(
 
     private fun ThumbsUpRepository.thumbsUpCount(postId: Long): Long {
         return thumbsUpRepository.countByPostId(postId)
+    }
+
+    private fun saveSearchKeyword(keyword: String) {
+        val saveKeyword = Keyword.of(keyword)
+        keywordRepository.save(saveKeyword)
     }
 }
