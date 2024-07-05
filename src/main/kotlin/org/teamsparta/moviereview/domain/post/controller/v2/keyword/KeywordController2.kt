@@ -7,7 +7,7 @@ import org.teamsparta.moviereview.domain.post.service.v2.keyword.KeywordService2
 
 @RequestMapping("/api/v2/keywords")
 @RestController
-class KeywordController(
+class KeywordController2(
     private val keywordService: KeywordService2
 ) {
     @GetMapping("/last-hour")
