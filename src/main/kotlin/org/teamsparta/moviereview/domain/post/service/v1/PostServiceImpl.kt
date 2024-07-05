@@ -148,7 +148,7 @@ class PostServiceImpl(
     }
 
     private fun saveSearchKeyword(keyword: String) {
-        val saveKeyword = Keyword(searchWord = keyword, createdAt = LocalDateTime.now())
+        val saveKeyword = Keyword.of(keyword)
         keywordRepository.save(saveKeyword)
     }
 }
