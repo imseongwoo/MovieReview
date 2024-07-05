@@ -2,10 +2,7 @@ package org.teamsparta.moviereview.domain.post.service.v1
 
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.teamsparta.moviereview.domain.post.dto.CreatePostRequest
-import org.teamsparta.moviereview.domain.post.dto.PostResponse
-import org.teamsparta.moviereview.domain.post.dto.PostResponseWithComments
-import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
+import org.teamsparta.moviereview.domain.post.dto.*
 import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
 import org.teamsparta.moviereview.infra.security.UserPrincipal
 
@@ -15,7 +12,7 @@ interface PostService {
     fun createPost(principal: UserPrincipal, request: CreatePostRequest): PostResponse
     fun updatePost(principal: UserPrincipal, postId: Long, request: UpdatePostRequest)
     fun deletePost(principal: UserPrincipal, postId: Long)
-    fun searchPost(keyword: String): List<PostResponse>
+    fun searchPost(pageable: Pageable, keyword: String?): Page<PostResponse>
     fun thumbsUpPost(principal: UserPrincipal, postId: Long)
     fun cancelThumbsUpPost(principal: UserPrincipal, postId: Long)
     fun reportPost(principal: UserPrincipal, postId: Long, request: ReportPostRequest)
