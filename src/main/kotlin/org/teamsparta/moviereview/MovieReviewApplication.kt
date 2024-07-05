@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
 @EnableScheduling
-@EnableCaching
 class MovieReviewApplication
 
 fun main(args: Array<String>) {
