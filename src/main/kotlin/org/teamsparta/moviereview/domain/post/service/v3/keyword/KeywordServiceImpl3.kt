@@ -1,4 +1,4 @@
-package org.teamsparta.moviereview.domain.post.service.v2.keyword
+package org.teamsparta.moviereview.domain.post.service.v3.keyword
 
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.scheduling.annotation.Scheduled
@@ -9,9 +9,9 @@ import org.teamsparta.moviereview.domain.post.repository.v1.keyword.KeywordRepos
 import java.time.LocalDateTime
 
 @Service
-class KeywordServiceImpl2(
+class KeywordServiceImpl3(
     private val keywordRepository: KeywordRepository
-) : KeywordService2 {
+) : KeywordService3 {
 
     @Transactional
     override fun saveKeyword(searchWord: String) {
@@ -19,14 +19,14 @@ class KeywordServiceImpl2(
         keywordRepository.save(searchKeyword)
     }
 
-    @Cacheable("hotKeywordsLastHour", cacheManager = "caffeineCacheManager")
+    @Cacheable("hotKeywordsLastHour", cacheManager = "redisCacheManager")
     override fun getHotKeywordsLastHour(): List<String> {
         val now = LocalDateTime.now()
         val from = now.minusHours(1)
         return keywordRepository.getHotKeywords(from, now)
     }
 
-    @Cacheable("hotKeywordsLastDay", cacheManager = "caffeineCacheManager")
+    @Cacheable("hotKeywordsLastDay", cacheManager = "redisCacheManager")
     override fun getHotKeywordsLastDay(): List<String> {
         val now = LocalDateTime.now()
         val from = now.minusDays(1)
