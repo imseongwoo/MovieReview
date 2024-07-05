@@ -70,9 +70,11 @@ class PostRepositoryImpl : CustomPostRepository, QueryDslSupport() {
             )
         }
 
-        val totalCount = queryFactory.selectFrom(post)
+        val totalCount = queryFactory.select(post.count())
+            .from(post)
             .where(whereClause)
-            .fetchCount()
+            .fetchOne() ?: -1L
+
 
         val posts = queryFactory.selectFrom(post)
             .leftJoin(post.user, user).fetchJoin()
@@ -99,7 +101,7 @@ class PostRepositoryImpl : CustomPostRepository, QueryDslSupport() {
                 nickname = post.user.nickname,
                 content = post.content,
                 category = post.category.toString(),
-                thumbUpCount = thumbsUpCounts[post.id] ?: 0L,
+                thumbUpCount = thumbsUpCounts[post.id] ?: -1L,
                 createdAt = post.createdAt,
                 updatedAt = post.updatedAt
             )
