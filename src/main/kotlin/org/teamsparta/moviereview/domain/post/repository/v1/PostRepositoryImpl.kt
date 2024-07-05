@@ -73,7 +73,7 @@ class PostRepositoryImpl : CustomPostRepository, QueryDslSupport() {
         val totalCount = queryFactory.select(post.count())
             .from(post)
             .where(whereClause)
-            .fetchOne() ?: -1L
+            .fetchOne() ?: 0L
 
 
         val posts = queryFactory.selectFrom(post)
@@ -101,7 +101,7 @@ class PostRepositoryImpl : CustomPostRepository, QueryDslSupport() {
                 nickname = post.user.nickname,
                 content = post.content,
                 category = post.category.toString(),
-                thumbUpCount = thumbsUpCounts[post.id] ?: -1L,
+                thumbUpCount = thumbsUpCounts[post.id] ?: 0L,
                 createdAt = post.createdAt,
                 updatedAt = post.updatedAt
             )

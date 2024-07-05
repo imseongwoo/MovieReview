@@ -19,7 +19,7 @@ class CacheConfig {
             .expireAfterWrite(1, TimeUnit.MINUTES)
 
         cacheManager.setCaffeine(caffeine)
-        cacheManager.setCacheNames(listOf("hotKeywordsLastHour", "hotKeywordsLastDay"))
+        cacheManager.setCacheNames(listOf("hotKeywordsLastHour", "hotKeywordsLastDay", "searchPost"))
 
         return cacheManager
     }
