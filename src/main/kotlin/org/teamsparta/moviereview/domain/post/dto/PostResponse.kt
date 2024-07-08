@@ -1,6 +1,7 @@
 package org.teamsparta.moviereview.domain.post.dto
 
 import org.teamsparta.moviereview.domain.post.model.Post
+import java.io.Serializable
 import java.time.LocalDateTime
 
 data class PostResponse(
@@ -12,7 +13,7 @@ data class PostResponse(
     val thumbUpCount: Long,
     val createdAt: LocalDateTime,
     val updatedAt: LocalDateTime
-) {
+): Serializable {
     companion object {
         fun from(post: Post, thumbUpCount: Long): PostResponse {
             return PostResponse(
