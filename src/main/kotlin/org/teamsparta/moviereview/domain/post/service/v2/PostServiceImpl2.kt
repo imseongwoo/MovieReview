@@ -55,7 +55,7 @@ class PostServiceImpl2(
         return PostResponseWithComments.from(post, thumbsUpRepository.thumbsUpCount(postId), commentList)
     }
 
-    @CacheEvict("searchPostAOP", cacheManager = "caffeineCacheManager")
+    @CacheEvict("searchPostAOP", cacheManager = "caffeineCacheManager", allEntries = true)
     override fun createPost(principal: UserPrincipal, request: CreatePostRequest): PostResponse {
         val user = userRepository.findByIdOrNull(principal.id) ?: throw ModelNotFoundException("User", principal.id)
 
