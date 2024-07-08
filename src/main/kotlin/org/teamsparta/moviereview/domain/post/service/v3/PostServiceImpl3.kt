@@ -1,5 +1,6 @@
 package org.teamsparta.moviereview.domain.post.service.v3
 
+import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -45,6 +46,7 @@ class PostServiceImpl3(
     }
 
     @Transactional(readOnly = true)
+
     override fun getPostById(postId: Long): PostResponseWithComments {
         val post = postRepository.findByIdOrNull(postId) ?: throw ModelNotFoundException("Post", postId)
 
@@ -54,6 +56,7 @@ class PostServiceImpl3(
         return PostResponseWithComments.from(post, thumbsUpRepository.thumbsUpCount(postId), commentList)
     }
 
+    @CacheEvict("searchPostRedis")
     override fun createPost(principal: UserPrincipal, request: CreatePostRequest): PostResponse {
         val user = userRepository.findByIdOrNull(principal.id) ?: throw ModelNotFoundException("User", principal.id)
 
@@ -83,7 +86,7 @@ class PostServiceImpl3(
         thumbsUpRepository.deleteAllByPostId(postId)
     }
 
-    @Cacheable("searchPost", cacheManager = "redisCacheManager")
+    @Cacheable("searchPostRedis", cacheManager = "redisCacheManager")
     override fun searchPost(pageable: Pageable, keyword: String?): Page<PostResponse> {
         keyword?.let { saveSearchKeyword(keyword) }
         return postRepository.searchPostByPageableAndKeyword(pageable, keyword)
