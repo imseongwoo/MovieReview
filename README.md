@@ -4,15 +4,19 @@
 영화 정보 및 리뷰 등을 공유하는 영화 관련 커뮤니티
 
 ## ⚙ 사용 개발 환경
-- Kotlin
-- `Java 17`
-- `Eclipse Temurin 18.0.2`
-- **IDE**: IntelliJ IDEA
-- **Framework**: Spring Boot(3.3.1), QueryDSL(5.0.0)
-- **Database**: Supabase
-- **ORM**: `spring-boot-starter-data-jpa`
-- Redis
-- nGrinder (캐싱 성능 테스트용)
+|           |                                                             Tool & Version                                                             |
+|:---------:|:--------------------------------------------------------------------------------------------------------------------------------------:|
+| Language  |              <img src="https://img.shields.io/badge/Kotlin-ver 1.9.24-7F52FF?style=flat-squre&logo=Kotlin&logoColor=white"/>              |
+|    IDE    |            <img src="https://img.shields.io/badge/Intellij%20IDEA-000000?style=flat-squre&logo=intellijidea&logoColor=white"/>            |
+|    SDK    | <img src="https://img.shields.io/badge/Eclipse%20Temurin-ver 17.0.11-FF1464?style=flat-squre&logo=eclipseadoptium&logoColor=white"/> | 
+| Framework |       <img src="https://img.shields.io/badge/Spring%20Boot-ver 3.3.1-6DB33F?style=flat-squre&logo=springboot&logoColor=white"/>        |
+|    JWT    |         <img src="https://img.shields.io/badge/jjwt-ver 0.12.3-000000?style=flat-square&logo=jsonwebtokens&logoColor=white"/>          |
+| Database  |         <img src="https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white"/>          |
+|   Cache   |         <img src="https://img.shields.io/badge/Redis-FF4438?style=flat-square&logo=redis&logoColor=white"/>          |
+|   ORM   |         <img src="https://img.shields.io/badge/JPA-43B02AF?style=flat-square&logo=&logoColor=white"/>          |
+| Query Builder |         <img src="https://img.shields.io/badge/Querydsl-0085CA?style=flat-square&logo=&logoColor=white"/>          |
+|Performance Testing Tool|         <img src="https://img.shields.io/badge/nGrinder-FF9E0F?style=flat-square&logo=&logoColor=white"/>          |
+
 
 ## 🖼 ERD
 ![image](https://github.com/imseongwoo/MovieReview/assets/162969955/0ce814e6-97a4-47b7-86d3-9d5e0cc0b8a1)
