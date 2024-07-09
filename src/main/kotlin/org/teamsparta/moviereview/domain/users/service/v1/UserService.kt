@@ -11,4 +11,5 @@ interface UserService {
     fun signIn(loginRequest: LoginRequest): LoginResponse
     fun updateProfile(profile: UserUpdateProfileDto, userId: Long): UserDto
     fun signOut(token: String)
+    fun validateRefreshTokenAndCreateToken(refreshToken: String): LoginResponse
 }
