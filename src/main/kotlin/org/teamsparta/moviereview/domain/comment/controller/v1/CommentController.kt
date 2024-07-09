@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*
 import org.teamsparta.moviereview.domain.comment.dto.CommentCreateRequest
 import org.teamsparta.moviereview.domain.comment.dto.CommentResponse
 import org.teamsparta.moviereview.domain.comment.dto.CommentUpdateRequest
+import org.teamsparta.moviereview.domain.comment.dto.CommentUpdateResponse
 import org.teamsparta.moviereview.domain.comment.service.v1.CommentService
 import org.teamsparta.moviereview.infra.security.UserPrincipal
 
@@ -30,7 +31,7 @@ class CommentController(
         @AuthenticationPrincipal principal: UserPrincipal,
         @PathVariable commentId: Long,
         @RequestBody request: CommentUpdateRequest
-    ): ResponseEntity<CommentResponse> {
+    ): ResponseEntity<CommentUpdateResponse> {
         return ResponseEntity.status(HttpStatus.OK).body(commentService.updateComment(commentId, request, principal.email))
     }
 

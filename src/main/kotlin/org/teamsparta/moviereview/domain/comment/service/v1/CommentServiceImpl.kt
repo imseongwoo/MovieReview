@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.teamsparta.moviereview.domain.comment.dto.CommentCreateRequest
 import org.teamsparta.moviereview.domain.comment.dto.CommentResponse
 import org.teamsparta.moviereview.domain.comment.dto.CommentUpdateRequest
+import org.teamsparta.moviereview.domain.comment.dto.CommentUpdateResponse
 import org.teamsparta.moviereview.domain.comment.model.Comment
 import org.teamsparta.moviereview.domain.comment.repository.v1.CommentRepository
 import org.teamsparta.moviereview.domain.common.exception.AccessDeniedException
@@ -35,7 +36,7 @@ class CommentServiceImpl(
     }
 
     @Transactional
-    override fun updateComment(commentId: Long, request: CommentUpdateRequest, email: String): CommentResponse {
+    override fun updateComment(commentId: Long, request: CommentUpdateRequest, email: String): CommentUpdateResponse {
         val comment: Comment =
             commentRepository.findByIdOrNull(commentId) ?: throw ModelNotFoundException("comment", commentId)
         val user: Users = userRepository.findByEmail(email) ?: throw IllegalStateException()
@@ -43,7 +44,7 @@ class CommentServiceImpl(
             comment.updateContent(request)
         } else throw AccessDeniedException("업데이트 권한이 없습니다.")
 
-        return CommentResponse.fromEntity(comment)
+        return CommentUpdateResponse.fromEntity(comment)
     }
 
     @Transactional
