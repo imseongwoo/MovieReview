@@ -41,10 +41,19 @@ class RedisConfig {
     @Primary
     @Bean("redisCacheManager")
     fun redisCacheManager(): CacheManager {
-        val redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+        val defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofMinutes(1))
+
+        val searchPostRedisCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
+            .entryTtl(Duration.ofMinutes(5))
+
+        val cacheConfigurations = mapOf(
+            "searchPostRedis" to searchPostRedisCacheConfig
+        )
+
         return RedisCacheManager.builder(lettuceConnectionFactory())
-            .cacheDefaults(redisCacheConfiguration)
+            .cacheDefaults(defaultCacheConfig)
+            .withInitialCacheConfigurations(cacheConfigurations)
             .build()
     }
 }
