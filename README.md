@@ -13,8 +13,8 @@
 |    JWT    |         <img src="https://img.shields.io/badge/jjwt-ver 0.12.3-000000?style=flat-square&logo=jsonwebtokens&logoColor=white"/>          |
 | Database  |         <img src="https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white"/>          |
 |   Cache   |         <img src="https://img.shields.io/badge/Redis-FF4438?style=flat-square&logo=redis&logoColor=white"/>          |
-|   ORM   |         <img src="https://img.shields.io/badge/JPA-43B02AF?style=flat-square&logo=&logoColor=white"/>          |
-| Query Builder |         <img src="https://img.shields.io/badge/Querydsl-0085CA?style=flat-square&logo=&logoColor=white"/>          |
+|   ORM   |         <img src="https://img.shields.io/badge/Spring Data JPA-43B02AF?style=flat-square&logo=&logoColor=white"/>          |
+| Query Builder |         <img src="https://img.shields.io/badge/Querydsl-ver 5.0.0-0085CA?style=flat-square&logo=&logoColor=white"/>          |
 |Performance Testing Tool|         <img src="https://img.shields.io/badge/nGrinder-FF9E0F?style=flat-square&logo=&logoColor=white"/>          |
 
 
