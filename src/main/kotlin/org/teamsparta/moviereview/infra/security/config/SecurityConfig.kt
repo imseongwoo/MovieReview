@@ -27,7 +27,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers(HttpMethod.GET, "/api/v1/posts", "/api/v1/posts/{postId}", "/api/v1/posts/search","/api/v1/keywords/**",
+                    .requestMatchers(HttpMethod.GET, "/api/v1/posts", "/api/v1/posts/{postId}", "/api/v1/posts/search","/api/v1/keywords/**","/api/v1/users/token/refresh",
                         "/api/v2/posts", "/api/v2/posts/{postId}", "/api/v2/posts/search","/api/v2/keywords/**",
                         "/api/v3/posts", "/api/v3/posts/{postId}", "/api/v3/posts/search","/api/v3/keywords/**",).permitAll()
                     .requestMatchers("/error").permitAll()

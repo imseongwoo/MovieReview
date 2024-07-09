@@ -48,12 +48,23 @@ class UserServiceImpl(
         if (user.email != loginRequest.email || !passwordEncoder.matches(loginRequest.password, user.password)) {
             throw InvalidCredentialException()
         }
+
+        val accessToken = jwtPlugin.generateAccessToken(
+            subject = user.id.toString(),
+            email = user.email,
+            role = user.role.toString()
+        )
+
+        val refreshToken = jwtPlugin.generateRefreshToken(
+            subject = user.id.toString(),
+            email = user.email,
+            role = user.role.toString()
+        )
+
+        redisUtils.saveRefreshToken(refreshToken)
+
         return LoginResponse.fromEntity(
-            jwtPlugin.generateAccessToken(
-                subject = user.id.toString(),
-                email = user.email,
-                role = user.role.toString()
-            )
+            accessToken, refreshToken
         )
     }
 
@@ -70,6 +81,17 @@ class UserServiceImpl(
 
     fun isTokenBlacklisted(token: String): Boolean {
         return redisUtils.getData(token) != null
+    }
+
+    override fun validateRefreshTokenAndCreateToken(refreshToken: String): LoginResponse {
+        redisUtils.findByRefreshToken(refreshToken)
+            ?: throw InvalidCredentialException("만료되거나 찾을 수 없는 Refresh 토큰입니다. 재로그인이 필요합니다.")
+
+        val newTokenInfo = jwtPlugin.validateRefreshTokenAndCreateToken(refreshToken)
+        redisUtils.deleteByRefreshToken(refreshToken)
+        redisUtils.saveRefreshToken(newTokenInfo.refreshToken)
+
+        return newTokenInfo
     }
 
 }
