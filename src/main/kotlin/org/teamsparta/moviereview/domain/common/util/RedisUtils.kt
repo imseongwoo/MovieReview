@@ -10,7 +10,7 @@ class RedisUtils(
     private val redisTemplate: RedisTemplate<String, String>,
 ) {
     companion object {
-        private val DURATION_TIME = 1000 * 60 * 60 * 24L * 7
+        private val DURATION_TIME = 1000 * 60 * 60 * 24L
         private val REFRESH_TOKEN_DURATION_TIME = 1000 * 60 * 60 * 24L * 7
         private const val KEY_PREFIX = "refreshToken"
     }
