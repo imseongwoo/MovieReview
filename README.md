@@ -7,6 +7,7 @@
 - Kotlin
 - `Java 17`
 - `Eclipse Temurin 18.0.2`
+- **IDE**: IntelliJ IDEA
 - **Framework**: Spring Boot(3.3.1), QueryDSL(5.0.0)
 - **Database**: Supabase
 - **ORM**: `spring-boot-starter-data-jpa`
