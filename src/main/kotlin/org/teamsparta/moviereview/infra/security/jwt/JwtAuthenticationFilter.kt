@@ -8,11 +8,13 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import org.teamsparta.moviereview.domain.users.service.v1.UserServiceImpl
 import org.teamsparta.moviereview.infra.security.UserPrincipal
 
 @Component
 class JwtAuthenticationFilter(
-    private val jwtPlugin: JwtPlugin
+    private val jwtPlugin: JwtPlugin,
+    private val userService: UserServiceImpl
 ) : OncePerRequestFilter() {
 
     companion object {
@@ -27,6 +29,10 @@ class JwtAuthenticationFilter(
         val jwt = request.getBearerToken()
 
         if (jwt != null) {
+            if (userService.isTokenBlacklisted(jwt)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token is blacklisted")
+                return
+            }
             jwtPlugin.validateToken(jwt)
                 .onSuccess {
                     val userId = it.payload.subject.toLong()
@@ -43,6 +49,11 @@ class JwtAuthenticationFilter(
                         details = WebAuthenticationDetailsSource().buildDetails(request)
                     )
                     SecurityContextHolder.getContext().authentication = authentication
+                    request.setAttribute("accessToken", jwt)
+                }
+                .onFailure {
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token")
+                    return
                 }
         }
 

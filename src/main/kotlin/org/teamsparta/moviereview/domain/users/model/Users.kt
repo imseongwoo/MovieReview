@@ -1,6 +1,7 @@
 package org.teamsparta.moviereview.domain.users.model
 
 import jakarta.persistence.*
+import org.teamsparta.moviereview.domain.users.dto.UserUpdateProfileDto
 import java.time.LocalDateTime
 
 @Entity
@@ -17,7 +18,7 @@ class Users(
     val role: UserRole = UserRole.USER,
 
     @Column(name = "nickname", nullable = true)
-    val nickname: String,
+    var nickname: String,
 
     @Column(name = "created_at", nullable = false)
     var createdAt: LocalDateTime = LocalDateTime.now(),
@@ -28,5 +29,9 @@ class Users(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun updateProfile(profileDto: UserUpdateProfileDto) {
+        this.nickname = profileDto.nickname
+    }
 
 }

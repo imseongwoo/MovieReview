@@ -1,14 +1,17 @@
 package org.teamsparta.moviereview.domain.users.service.v1
 
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.teamsparta.moviereview.domain.common.InvalidCredentialException
+import org.teamsparta.moviereview.domain.common.exception.InvalidCredentialException
 import org.teamsparta.moviereview.domain.common.exception.ModelNotFoundException
+import org.teamsparta.moviereview.domain.common.util.RedisUtils
 import org.teamsparta.moviereview.domain.users.dto.LoginRequest
 import org.teamsparta.moviereview.domain.users.dto.LoginResponse
 import org.teamsparta.moviereview.domain.users.dto.SignUpRequest
 import org.teamsparta.moviereview.domain.users.dto.UserDto
+import org.teamsparta.moviereview.domain.users.dto.UserUpdateProfileDto
 import org.teamsparta.moviereview.domain.users.model.Users
 import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
 import org.teamsparta.moviereview.infra.security.jwt.JwtPlugin
@@ -17,7 +20,8 @@ import org.teamsparta.moviereview.infra.security.jwt.JwtPlugin
 class UserServiceImpl(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtPlugin: JwtPlugin
+    private val jwtPlugin: JwtPlugin,
+    private val redisUtils: RedisUtils
 ) : UserService {
 
     @Transactional
@@ -52,4 +56,20 @@ class UserServiceImpl(
             )
         )
     }
+
+    @Transactional
+    override fun updateProfile(profile: UserUpdateProfileDto, userId: Long): UserDto {
+        val user = userRepository.findByIdOrNull(userId) ?: throw ModelNotFoundException("Users", userId)
+        user.updateProfile(profile)
+        return UserDto.fromEntity(user)
+    }
+
+    override fun signOut(token: String) {
+        redisUtils.setDataExpire(token, "blacklisted")
+    }
+
+    fun isTokenBlacklisted(token: String): Boolean {
+        return redisUtils.getData(token) != null
+    }
+
 }

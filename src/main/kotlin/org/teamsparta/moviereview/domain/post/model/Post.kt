@@ -28,7 +28,8 @@ class Post (
     var category: Category,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    var user: Users,
+    var user: Users
+
 ) : BaseEntity() {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,6 +49,14 @@ class Post (
         this.title = title
         this.content = content
         this.category = Category.fromString(category)
+    }
+
+    fun updateCategory(category: String) {
+        this.category = Category.fromString(category)
+    }
+
+    fun checkPermission(userId: Long, role: String): Boolean {
+        return user.id == userId || role == "ROLE_ADMIN"
     }
 
 }

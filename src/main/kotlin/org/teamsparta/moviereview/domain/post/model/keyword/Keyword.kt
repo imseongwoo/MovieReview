@@ -1,4 +1,4 @@
-package org.teamsparta.moviereview.domain.post.model.search
+package org.teamsparta.moviereview.domain.post.model.keyword
 
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 @Entity
 class Keyword(
-    val keyword: String,
+    val searchWord: String,
     val createdAt: LocalDateTime
 ) {
     @Id
@@ -16,10 +16,10 @@ class Keyword(
     var id: Long? = null
 
     companion object {
-        fun of(keyword: String): Keyword {
+        fun of(searchWord: String): Keyword {
             val timestamp = LocalDateTime.now()
             return Keyword(
-                keyword = keyword,
+                searchWord.replace(" ", ""),
                 createdAt = timestamp
             )
         }

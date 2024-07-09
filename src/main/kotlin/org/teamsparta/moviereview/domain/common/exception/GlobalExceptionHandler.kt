@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.teamsparta.moviereview.domain.common.InvalidCredentialException
 import org.teamsparta.moviereview.domain.common.exception.dto.ErrorResponse
 
 @RestControllerAdvice
@@ -45,6 +44,13 @@ class GlobalExceptionHandler {
     fun handleIllegalArgumentException(e: IllegalArgumentException) : ResponseEntity<ErrorResponse> {
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
+            .body(ErrorResponse(e.message))
+    }
+
+    @ExceptionHandler
+    fun handleAccessDeniedException(e: AccessDeniedException) : ResponseEntity<ErrorResponse> {
+        return ResponseEntity
+            .status(HttpStatus.FORBIDDEN)
             .body(ErrorResponse(e.message))
     }
 }
