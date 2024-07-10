@@ -1,5 +1,6 @@
 package org.teamsparta.moviereview.domain.post.service.v2.keyword
 
+import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -10,7 +11,8 @@ import java.time.LocalDateTime
 
 @Service
 class KeywordServiceImpl2(
-    private val keywordRepository: KeywordRepository
+    private val keywordRepository: KeywordRepository,
+    private val cacheManager: CacheManager
 ) : KeywordService2 {
 
     @Transactional
@@ -30,7 +32,12 @@ class KeywordServiceImpl2(
     override fun getHotKeywordsLastDay(): List<String> {
         val now = LocalDateTime.now()
         val from = now.minusDays(1)
-        return keywordRepository.getHotKeywords(from, now)
+        val hotKeywords = keywordRepository.getHotKeywords(from, now)
+
+        val cache = cacheManager.getCache("hotKeywordsLastDay")
+        cache?.put("top10", hotKeywords)
+
+        return hotKeywords
     }
 
     @Scheduled(cron = "0 0 0 * * ?")

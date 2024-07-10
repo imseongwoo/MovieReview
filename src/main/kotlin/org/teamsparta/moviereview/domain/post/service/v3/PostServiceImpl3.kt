@@ -18,7 +18,6 @@ import org.teamsparta.moviereview.domain.post.dto.PostResponseWithComments
 import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
 import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.model.Post
-import org.teamsparta.moviereview.domain.post.model.keyword.Keyword
 import org.teamsparta.moviereview.domain.post.model.report.Report
 import org.teamsparta.moviereview.domain.post.model.thumbsup.ThumbsUp
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
@@ -87,8 +86,7 @@ class PostServiceImpl3(
     }
 
     @Cacheable("searchPostRedis", cacheManager = "redisCacheManager")
-    override fun searchPost(pageable: Pageable, keyword: String?): Page<PostResponse> {
-        keyword?.let { saveSearchKeyword(keyword) }
+    override fun searchPostByKeyword(pageable: Pageable, keyword: String): Page<PostResponse> {
         return postRepository.searchPostByPageableAndKeyword(pageable, keyword)
     }
 
@@ -149,10 +147,5 @@ class PostServiceImpl3(
 
     private fun ThumbsUpRepository.thumbsUpCount(postId: Long): Long {
         return thumbsUpRepository.countByPostId(postId)
-    }
-
-    private fun saveSearchKeyword(keyword: String) {
-        val saveKeyword = Keyword.of(keyword)
-        keywordRepository.save(saveKeyword)
     }
 }

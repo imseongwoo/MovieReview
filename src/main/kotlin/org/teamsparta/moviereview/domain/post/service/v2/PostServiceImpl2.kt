@@ -18,11 +18,9 @@ import org.teamsparta.moviereview.domain.post.dto.PostResponseWithComments
 import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
 import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.model.Post
-import org.teamsparta.moviereview.domain.post.model.keyword.Keyword
 import org.teamsparta.moviereview.domain.post.model.report.Report
 import org.teamsparta.moviereview.domain.post.model.thumbsup.ThumbsUp
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
-import org.teamsparta.moviereview.domain.post.repository.v1.keyword.KeywordRepository
 import org.teamsparta.moviereview.domain.post.repository.v1.report.ReportRepository
 import org.teamsparta.moviereview.domain.post.repository.v1.thumbsup.ThumbsUpRepository
 import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
@@ -34,8 +32,7 @@ class PostServiceImpl2(
     private val thumbsUpRepository: ThumbsUpRepository,
     private val userRepository: UserRepository,
     private val commentRepository: CommentRepository,
-    private val reportRepository: ReportRepository,
-    private val keywordRepository: KeywordRepository
+    private val reportRepository: ReportRepository
 ) : PostService2 {
     override fun getPostList(pageable: Pageable, category: String?): Page<PostResponse> {
         val (totalCount, post, thumbsUpCount) = postRepository.findAllByPageableAndCategory(pageable, category)
@@ -86,8 +83,7 @@ class PostServiceImpl2(
     }
 
     @Cacheable("searchPostAOP", cacheManager = "caffeineCacheManager")
-    override fun searchPost(pageable: Pageable, keyword: String?): Page<PostResponse> {
-        keyword?.let { saveSearchKeyword(keyword) }
+    override fun searchPostByKeyword(pageable: Pageable, keyword: String): Page<PostResponse> {
         return postRepository.searchPostByPageableAndKeyword(pageable, keyword)
     }
 
@@ -148,10 +144,5 @@ class PostServiceImpl2(
 
     private fun ThumbsUpRepository.thumbsUpCount(postId: Long): Long {
         return thumbsUpRepository.countByPostId(postId)
-    }
-
-    private fun saveSearchKeyword(keyword: String) {
-        val saveKeyword = Keyword.of(keyword)
-        keywordRepository.save(saveKeyword)
     }
 }
