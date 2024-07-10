@@ -12,8 +12,8 @@ class SearchPostService3(
     private val postService3 : PostService3,
     private val keywordRepository: KeywordRepository
 ) {
-    fun searchPost(pageable: Pageable, keyword: String?): Page<PostResponse> {
-        keyword?.let { saveSearchKeyword(keyword) }
+    fun searchPost(pageable: Pageable, keyword: String): Page<PostResponse> {
+        keyword.let { saveSearchKeyword(keyword) }
         return postService3.searchPostByKeyword(pageable, keyword)
     }
 
