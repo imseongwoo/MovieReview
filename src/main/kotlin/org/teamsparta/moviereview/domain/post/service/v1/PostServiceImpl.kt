@@ -25,7 +25,6 @@ import org.teamsparta.moviereview.domain.post.repository.v1.report.ReportReposit
 import org.teamsparta.moviereview.domain.post.repository.v1.thumbsup.ThumbsUpRepository
 import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
 import org.teamsparta.moviereview.infra.security.UserPrincipal
-import java.time.LocalDateTime
 
 @Service
 class PostServiceImpl(
@@ -83,8 +82,8 @@ class PostServiceImpl(
         thumbsUpRepository.deleteAllByPostId(postId)
     }
 
-    override fun searchPost(pageable: Pageable, keyword: String?): Page<PostResponse> {
-        keyword?.let { saveSearchKeyword(keyword) }
+    override fun searchPost(pageable: Pageable, keyword: String): Page<PostResponse> {
+        keyword.let { saveSearchKeyword(keyword) }
         return postRepository.searchPostByPageableAndKeyword(pageable, keyword)
     }
 

@@ -21,7 +21,6 @@ import org.teamsparta.moviereview.domain.post.model.Post
 import org.teamsparta.moviereview.domain.post.model.report.Report
 import org.teamsparta.moviereview.domain.post.model.thumbsup.ThumbsUp
 import org.teamsparta.moviereview.domain.post.repository.v1.PostRepository
-import org.teamsparta.moviereview.domain.post.repository.v1.keyword.KeywordRepository
 import org.teamsparta.moviereview.domain.post.repository.v1.report.ReportRepository
 import org.teamsparta.moviereview.domain.post.repository.v1.thumbsup.ThumbsUpRepository
 import org.teamsparta.moviereview.domain.users.repository.v1.UserRepository
@@ -84,7 +83,7 @@ class PostServiceImpl2(
     }
 
     @Cacheable("searchPostAOP", cacheManager = "caffeineCacheManager")
-    override fun searchPostByKeyword(pageable: Pageable, keyword: String?): Page<PostResponse> {
+    override fun searchPostByKeyword(pageable: Pageable, keyword: String): Page<PostResponse> {
         return postRepository.searchPostByPageableAndKeyword(pageable, keyword)
     }
 

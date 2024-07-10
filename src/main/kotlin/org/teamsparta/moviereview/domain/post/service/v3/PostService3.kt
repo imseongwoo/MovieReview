@@ -15,7 +15,7 @@ interface PostService3 {
     fun createPost(principal: UserPrincipal, request: CreatePostRequest): PostResponse
     fun updatePost(principal: UserPrincipal, postId: Long, request: UpdatePostRequest)
     fun deletePost(principal: UserPrincipal, postId: Long)
-    fun searchPostByKeyword(pageable: Pageable, keyword: String?): Page<PostResponse>
+    fun searchPostByKeyword(pageable: Pageable, keyword: String): Page<PostResponse>
     fun thumbsUpPost(principal: UserPrincipal, postId: Long)
     fun cancelThumbsUpPost(principal: UserPrincipal, postId: Long)
     fun reportPost(principal: UserPrincipal, postId: Long, request: ReportPostRequest)
