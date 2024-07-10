@@ -13,12 +13,14 @@ import org.teamsparta.moviereview.domain.post.dto.PostResponseWithComments
 import org.teamsparta.moviereview.domain.post.dto.UpdatePostRequest
 import org.teamsparta.moviereview.domain.post.dto.report.ReportPostRequest
 import org.teamsparta.moviereview.domain.post.service.v2.PostService2
+import org.teamsparta.moviereview.domain.post.service.v2.SearchPostService2
 import org.teamsparta.moviereview.infra.security.UserPrincipal
 
 @RequestMapping("/api/v2/posts")
 @RestController
 class PostController2(
-    private val postService2: PostService2
+    private val postService2: PostService2,
+    private val searchPostService2 : SearchPostService2,
 ) {
 
     @GetMapping
@@ -66,7 +68,7 @@ class PostController2(
         pageable: Pageable,
         @RequestParam keyword: String,
     ): ResponseEntity<Page<PostResponse>> {
-        return ResponseEntity.status(HttpStatus.OK).body(postService2.searchPost(pageable, keyword))
+        return ResponseEntity.status(HttpStatus.OK).body(searchPostService2.searchPost(pageable, keyword))
     }
 
     @PostMapping("/{postId}/thumbs-up")

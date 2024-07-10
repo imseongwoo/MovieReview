@@ -87,8 +87,7 @@ class PostServiceImpl3(
     }
 
     @Cacheable("searchPostRedis", cacheManager = "redisCacheManager")
-    override fun searchPost(pageable: Pageable, keyword: String?): Page<PostResponse> {
-        keyword?.let { saveSearchKeyword(keyword) }
+    override fun searchPostByKeyword(pageable: Pageable, keyword: String?): Page<PostResponse> {
         return postRepository.searchPostByPageableAndKeyword(pageable, keyword)
     }
 
