@@ -21,3 +21,9 @@ logging:
         orm:
           jdbc:
             bind: trace
+auth:
+  jwt:
+    issuer: team.sparta.com
+    secret: Pwer23452rterdf23srdgdfg23
+    accessTokenExpirationHour: 24
+    refreshTokenExpirationHour: 168
